@@ -1,0 +1,4 @@
+# PythonCompetition
+
+Main idea
+
