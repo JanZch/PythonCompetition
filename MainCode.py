@@ -1,6 +1,4 @@
-# Firsti love latex
-# does comminting work
-# First
-# does comminting work
+# Firsti love late
 #  but doses i twork without git
-# this is my code stuff - Jan if i edit a thing then what hppenss sex?????????????? SEX
+# this is my code stuff - Jan if i edit a thing then what hppenss sex??????????????
+\print("uwu")
