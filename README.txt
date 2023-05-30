@@ -1,6 +1,14 @@
 # PythonCompetition
 
 Main idea
+  Main Gameplay:
+• Asteroids 
+• Bodies are probably stationary and projectiles are affected by their gravity
+  AI:
+• There is an enemy(ies) 
+• The AI can move and shoot
+• It has waypoints on a map that tell it where to go
+  
 
 Rules:
 • Submissions by one student, or as a team submission by maximum of two students is allowed
