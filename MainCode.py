@@ -1,3 +1,6 @@
 # Firsti love latex
 # does comminting work
-# i am in the branch called david
+# First
+# does comminting work
+#  but doses i twork without git
+# this is my code stuff - Jan
