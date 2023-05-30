@@ -8,6 +8,7 @@ Main idea
 • There is an enemy(ies) 
 • The AI can move and shoot
 • It has waypoints on a map that tell it where to go
+• the AI moves between waypoints depending on player position and tries to shoor meanwhile
   
 
 Rules:
