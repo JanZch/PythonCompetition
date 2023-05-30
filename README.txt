@@ -1,6 +1,6 @@
 # PythonCompetition
 
-Main idea
+IDEA 1
   Main Gameplay:
 • Asteroids 
 • Bodies are probably stationary and projectiles are affected by their gravity
