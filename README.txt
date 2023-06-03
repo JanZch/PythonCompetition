@@ -8,7 +8,18 @@ IDEA 1
 • There is an enemy(ies) 
 • The AI can move and shoot
 • It has waypoints on a map that tell it where to go
-• the AI moves between waypoints depending on player position and tries to shoor meanwhile
+• the AI moves between waypoints depending on player position and tries to shoot meanwhile
+
+IDEA 2
+  Main Gameplay:
+• Flying V dodging missiles
+• Top-down view, continuous speed, can only control direction
+• Missiles have the same velocity, but lower turn rate
+• Flying V has a turbo, where you can temporarily increase speed to outrun missiles
+• Area loops
+• More and more missiles as time goes on
+• Missiles come in from edge of the map
+• Extra: radar-guided and heat-seeking missiles, chaff and flares
   
 
 Rules:
