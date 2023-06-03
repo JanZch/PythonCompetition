@@ -3,6 +3,11 @@ import pygame as pg
 xmax, ymax = 1280, 720
 reso = (xmax, ymax)
 screen = pg.display.set_mode(reso)
+
+V = pg.image.load("FlyingV.png")
+Vrect = V.get_rect()
+
+
 running = True
 
 pg.init()
