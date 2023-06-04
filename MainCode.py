@@ -44,7 +44,6 @@ pg.init()  # initialize PyGame
 running = True  # condition for main loop
 
 while running:
-    tsim = tsim + dt
     if (pg.mouse.get_pressed()[0] and boostTimer >= 1) or (pg.mouse.get_pressed()[0] and boost and boostTimer >= 0):
         boost = True
         boostTimer -= dt
@@ -96,8 +95,12 @@ while running:
     pg.draw.line(surface, black, (0.2 * xmax, 0.05 * ymax),
                  ((0.2 + boostTimer / boostTimerMax * 0.6) * xmax, 0.05 * ymax))
     pg.display.flip()
+
+    pg.quit()
+
+    "Timing loop"
+    tsim = tsim + dt
     remainder = tsim - (0.001 * pg.time.get_ticks() - tstart)
     if remainder > MINSLEEP:
         time.sleep(remainder)
-    pg.event.pump()
 pg.quit()
