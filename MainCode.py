@@ -33,6 +33,5 @@ while running:
         pg.draw.rect(surface, white, rect)
         surface.blit(VSurface, VRect)
         pg.display.flip()
-        time.sleep(0.1)
 
 pg.quit()
