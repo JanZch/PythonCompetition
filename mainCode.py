@@ -25,11 +25,11 @@ for i in range(360):  # get a rotated image for all 360 degrees
 
 """Define and set variables"""
 white, black, grey = (255, 255, 255), (0, 0, 0), (178, 190, 181)  # colours
-x, y = xMax / yMax * 0.5, 0.5  # starting position
-theta = np.pi / 2  # starting attitude
-deltaThetaMax = 0.005  # maximum allowed change in attitude in time dt
+xV, yV = xMax / yMax * 0.5, 0.5  # starting position
+thetaV = np.pi / 2  # starting attitude
+deltaThetaMaxV = 0.005  # maximum allowed change in attitude in time dt
 v0, vmax = 0.5, 2  # idle velocity, max velocity with boost
-v = v0
+vV = v0
 boostTimerMax, boostTimerMin = 3, 1  # boost capacity, treshold boost level to start
 acc = 4  # acceleration given by boost
 boost = False  # status of boosters
@@ -47,7 +47,7 @@ running = True  # condition for main loop
 while running:
     """Inputs"""
     pressed = pg.mouse.get_pressed()[0]
-    xm, ym = pg.mouse.get_pos()
+    xmV, ymV = pg.mouse.get_pos()
     pg.event.pump()
 
     """Check for boost and increment velocity, as neccessary"""
@@ -58,19 +58,19 @@ while running:
     else:
         boost = False  # turn boost off
         boostTimer = min(boostTimer + dt, boostTimerMax)  # increase boost level if not already at boostTimerMax
-    if boost and v < vmax:
+    if boost and vV < vmax:
         a = acc  # accelerate if under vmax
-    elif v > v0:
+    elif vV > v0:
         a = -acc  # decelerate if above v0
     else:
         a = 0  # steady speed, either v0 or vmax
-    v = v + a * dt  # increment velocity
+    vV = vV + a * dt  # increment velocity
 
-    x, y, xs, ys, theta = move(theta, x, y, xm, ym, deltaThetaMax, yMax, dt, v)  # rotate and move V
+    xV, yV, xsV, xyV, thetaV = move(thetaV, xV, yV, xmV, ymV, deltaThetaMaxV, yMax, dt, vV)  # rotate and move V
 
     """Display"""
-    thetaDeg = int(np.degrees(theta))  # get theta in degrees
-    VRect[thetaDeg].center = (xs, ys)  # get rotated V and position it
+    thetaDeg = int(np.degrees(thetaV))  # get theta in degrees
+    VRect[thetaDeg].center = (xsV, xyV)  # get rotated V and position it
     pg.draw.rect(surface, white, rect)  # colour surface
     surface.blit(VSurface[thetaDeg], VRect[thetaDeg])  # put V onto surface
     pg.draw.line(surface, grey, (0.2 * xMax, 0.05 * yMax),

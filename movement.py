@@ -1,17 +1,17 @@
 import numpy as np
 
-def move(theta, x, y, xm, ym, deltaThetaMax, yMax, dt, v):
 
+def move(theta, xCurrent, yCurrent, xTarget, yTarget, deltaThetaMax, yMax, dt, v):
     """Change position"""
     vx = v * np.cos(theta)
     vy = v * np.sin(theta)
-    x += vx * dt  # relative coordinates
-    y += vy * dt
-    xs = int(x * yMax)  # surface coordinates
-    ys = yMax - int(y * yMax)
+    xCurrent += vx * dt  # relative coordinates
+    yCurrent += vy * dt
+    xs = int(xCurrent * yMax)  # surface coordinates
+    ys = yMax - int(yCurrent * yMax)
 
     """Steer depending on location of mouse pointer"""
-    alpha = np.arctan2(ys - ym, xm - xs)  # get angle of pointer wrt V
+    alpha = np.arctan2(ys - yTarget, xTarget - xs)  # get angle of pointer wrt V
     if alpha < 0:  # convert -pi pi range of atan2 to 0 2pi
         alpha += 2 * np.pi
     if 2 * np.pi - theta + alpha < abs(alpha - theta):  # if angle has to go from under to above x axis
@@ -30,5 +30,4 @@ def move(theta, x, y, xm, ym, deltaThetaMax, yMax, dt, v):
     elif theta < 0:
         theta += 2 * np.pi
 
-    return x, y, xs, ys, theta
-
+    return xCurrent, yCurrent, xs, ys, theta
