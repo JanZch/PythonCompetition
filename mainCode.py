@@ -1,10 +1,11 @@
 import pygame as pg
 import time
 import numpy as np
+from movement import *
 
 """Set up window"""
-xmax, ymax = 1280, 720
-reso = (xmax, ymax)
+xMax, yMax = 1280, 720
+reso = (xMax, yMax)
 surface = pg.display.set_mode(reso)
 rect = surface.get_rect()
 
@@ -24,7 +25,7 @@ for i in range(360):  # get a rotated image for all 360 degrees
 
 """Define and set variables"""
 white, black, grey = (255, 255, 255), (0, 0, 0), (178, 190, 181)  # colours
-x, y = xmax / ymax * 0.5, 0.5  # starting position
+x, y = xMax / yMax * 0.5, 0.5  # starting position
 theta = np.pi / 2  # starting attitude
 deltaThetaMax = 0.005  # maximum allowed change in attitude in time dt
 v0, vmax = 0.5, 2  # idle velocity, max velocity with boost
@@ -34,10 +35,10 @@ acc = 4  # acceleration given by boost
 boost = False  # status of boosters
 boostTimer = 0  # current boost level
 
-tsim = 0.0  # current simulated time
-tstart = 0.001 * pg.time.get_ticks()  # starting time
+tSim = 0.0  # current simulated time
+tStart = 0.001 * pg.time.get_ticks()  # starting time
 dt = 0.001  # time step
-MINSLEEP = 0.0001  # minimum time to sleep
+minSleep = 0.0001  # minimum time to sleep
 
 """Main loop"""
 pg.init()  # initialize PyGame
@@ -70,8 +71,8 @@ while running:
     vy = v * np.sin(theta)
     x += vx * dt  # relative coordinates
     y += vy * dt
-    xs = int(x * ymax)  # surface coordinates
-    ys = ymax - int(y * ymax)
+    xs = int(x * yMax)  # surface coordinates
+    ys = yMax - int(y * yMax)
 
     """Steer depending on location of mouse pointer"""
     alpha = np.arctan2(ys - ym, xm - xs)  # get angle of pointer wrt V
@@ -98,16 +99,16 @@ while running:
     VRect[thetaDeg].center = (xs, ys)  # get rotated V and position it
     pg.draw.rect(surface, white, rect)  # colour surface
     surface.blit(VSurface[thetaDeg], VRect[thetaDeg])  # put V onto surface
-    pg.draw.line(surface, grey, (0.2 * xmax, 0.05 * ymax),
-                 (0.8 * xmax, 0.05 * ymax))  # line demarking boost capacity
-    pg.draw.line(surface, black, (0.2 * xmax, 0.05 * ymax),
-                 ((0.2 + boostTimer / boostTimerMax * 0.6) * xmax, 0.05 * ymax))  # line demarking boost level
+    pg.draw.line(surface, grey, (0.2 * xMax, 0.05 * yMax),
+                 (0.8 * xMax, 0.05 * yMax))  # line demarking boost capacity
+    pg.draw.line(surface, black, (0.2 * xMax, 0.05 * yMax),
+                 ((0.2 + boostTimer / boostTimerMax * 0.6) * xMax, 0.05 * yMax))  # line demarking boost level
     pg.display.flip()
 
     "Timing"
-    tsim = tsim + dt
-    remainder = tsim - (0.001 * pg.time.get_ticks() - tstart)
-    if remainder > MINSLEEP:
+    tSim = tSim + dt
+    remainder = tSim - (0.001 * pg.time.get_ticks() - tStart)
+    if remainder > minSleep:
         time.sleep(remainder)
 
     """Break loop if neccessary"""
