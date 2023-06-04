@@ -26,7 +26,7 @@ for i in range(360):  # get a rotated image for all 360 degrees
 white, black, grey = (255, 255, 255), (0, 0, 0), (178, 190, 181)  # colours
 x, y = xmax / ymax * 0.5, 0.5  # starting position
 theta = np.pi / 2  # starting attitude
-deltaThetaMax = 0.008  # maximum allowed change in attitude in time dt
+deltaThetaMax = 0.005  # maximum allowed change in attitude in time dt
 v0, vmax = 0.5, 2  # idle velocity, max velocity with boost
 v = v0
 boostTimerMax, boostTimerMin = 3, 1  # boost capacity, treshold boost level to start
@@ -65,40 +65,43 @@ while running:
         a = 0  # steady speed, either v0 or vmax
     v = v + a * dt  # increment velocity
 
+    """Change position"""
     vx = v * np.cos(theta)
     vy = v * np.sin(theta)
-    x += vx * dt
+    x += vx * dt  # relative coordinates
     y += vy * dt
-    xs = int(x * ymax)
+    xs = int(x * ymax)  # surface coordinates
     ys = ymax - int(y * ymax)
 
-    alpha = np.arctan2(ys - ym, xm - xs)
-    if alpha < 0:
+    """Steer depending on location of mouse pointer"""
+    alpha = np.arctan2(ys - ym, xm - xs)  # get angle of pointer wrt V
+    if alpha < 0:  # convert -pi pi range of atan2 to 0 2pi
         alpha += 2 * np.pi
-
-    if 2 * np.pi - theta + alpha < abs(alpha - theta):
+    if 2 * np.pi - theta + alpha < abs(alpha - theta):  # if angle has to go from under to above x axis
         deltaTheta = 2 * np.pi - theta + alpha
-    elif 2 * np.pi + theta - alpha < abs(alpha - theta):
+    elif 2 * np.pi + theta - alpha < abs(alpha - theta):  # if angle has to go from above to under the x axis
         deltaTheta = - (2 * np.pi + theta - alpha)
     else:
-        deltaTheta = alpha - theta
-    if abs(deltaTheta) > deltaThetaMax:
+        deltaTheta = alpha - theta  # if neither are needed
+    if abs(deltaTheta) > deltaThetaMax:  # limit rate of turn per time step
         deltaTheta = np.sign(deltaTheta) * deltaThetaMax
-    theta += deltaTheta
+    theta += deltaTheta  # adjust angle by rate of turn
 
+    """Correct angle if out of bound"""
     if theta >= 2 * np.pi:
         theta -= 2 * np.pi
     elif theta < 0:
         theta += 2 * np.pi
 
-    thetaDeg = int(np.degrees(theta))
-    VRect[thetaDeg].center = (xs, ys)
-    pg.draw.rect(surface, white, rect)
-    surface.blit(VSurface[thetaDeg], VRect[thetaDeg])
+    """Display"""
+    thetaDeg = int(np.degrees(theta))  # get theta in degrees
+    VRect[thetaDeg].center = (xs, ys)  # get rotated V and position it
+    pg.draw.rect(surface, white, rect)  # colour surface
+    surface.blit(VSurface[thetaDeg], VRect[thetaDeg])  # put V onto surface
     pg.draw.line(surface, grey, (0.2 * xmax, 0.05 * ymax),
-                 (0.8 * xmax, 0.05 * ymax))
+                 (0.8 * xmax, 0.05 * ymax))  # line demarking boost capacity
     pg.draw.line(surface, black, (0.2 * xmax, 0.05 * ymax),
-                 ((0.2 + boostTimer / boostTimerMax * 0.6) * xmax, 0.05 * ymax))
+                 ((0.2 + boostTimer / boostTimerMax * 0.6) * xmax, 0.05 * ymax))  # line demarking boost level
     pg.display.flip()
 
     "Timing"
@@ -106,5 +109,12 @@ while running:
     remainder = tsim - (0.001 * pg.time.get_ticks() - tstart)
     if remainder > MINSLEEP:
         time.sleep(remainder)
+
+    """Break loop if neccessary"""
+    for event in pg.event.get():
+        if event.type == pg.QUIT:
+            running = False
+        elif event.type == pg.KEYDOWN and event.key == pg.K_ESCAPE:
+            running = False
 
 pg.quit()
