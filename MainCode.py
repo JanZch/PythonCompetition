@@ -8,7 +8,8 @@ surface = pg.display.set_mode(reso)
 rect = surface.get_rect()
 
 ogVSurface = pg.image.load("FlyingV.png")
-ogVSurface = pg.transform.smoothscale(ogVSurface, (73, 66))
+scale = 0.03
+ogVSurface = pg.transform.smoothscale(ogVSurface, (ogVSurface.get_width() * scale, ogVSurface.get_height() * scale))
 ogVRect = ogVSurface.get_rect()
 VSurface = []
 VRect = []
@@ -21,10 +22,11 @@ running = True
 
 white = (255, 255, 255)
 black = (0, 0, 0)
+grey = (178, 190, 181)
 pg.init()
 x, y = xmax / ymax * 0.5, 0.5
 theta = np.pi / 2
-deltaThetaMax = 0.005
+deltaThetaMax = 0.008
 v0, vmax, boostTimerMax = 0.5, 2, 3
 v = v0
 boost = False
@@ -37,7 +39,7 @@ MINSLEEP = 0.0001
 
 while running:
     tsim = tsim + dt
-    if (pg.mouse.get_pressed()[0] and boostTimer >= 1) or (boost and boostTimer >= 0):
+    if (pg.mouse.get_pressed()[0] and boostTimer >= 1) or (pg.mouse.get_pressed()[0] and boost and boostTimer >= 0):
         boost = True
         boostTimer -= dt
     else:
@@ -83,7 +85,10 @@ while running:
     VRect[thetaDeg].center = (xs, ys)
     pg.draw.rect(surface, white, rect)
     surface.blit(VSurface[thetaDeg], VRect[thetaDeg])
-    pg.draw.line(surface, black, (0.2 * xmax, 0.1 * ymax), (boostTimer / boostTimerMax * 0.8 * xmax, 0.1 * ymax))
+    pg.draw.line(surface, grey, (0.2 * xmax, 0.05 * ymax),
+                 (0.8 * xmax, 0.05 * ymax))
+    pg.draw.line(surface, black, (0.2 * xmax, 0.05 * ymax),
+                 ((0.2 + boostTimer / boostTimerMax * 0.6) * xmax, 0.05 * ymax))
     pg.display.flip()
     remainder = tsim - (0.001 * pg.time.get_ticks() - tstart)
     if remainder > MINSLEEP:
