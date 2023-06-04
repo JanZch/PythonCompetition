@@ -20,12 +20,15 @@ for i in range(360):
 running = True
 
 white = (255, 255, 255)
+black = (0, 0, 0)
 pg.init()
 x, y = xmax / ymax * 0.5, 0.5
 theta = np.pi / 2
 deltaThetaMax = 0.005
-v0, vmax = 0.5, 1
+v0, vmax, boostTimerMax = 0.5, 2, 3
 v = v0
+boost = False
+boostTimer = 0
 
 tsim = 0.0
 tstart = 0.001 * pg.time.get_ticks()
@@ -34,11 +37,17 @@ MINSLEEP = 0.0001
 
 while running:
     tsim = tsim + dt
-    boost = pg.mouse.get_pressed()[0]
-    if boost == True and not v >= vmax:
-        a = 1
+    if (pg.mouse.get_pressed()[0] and boostTimer >= 1) or (boost and boostTimer >= 0):
+        boost = True
+        boostTimer -= dt
+    else:
+        boost = False
+        boostTimer = min(boostTimer + dt, boostTimerMax)
+    print(boostTimer)
+    if boost and v < vmax:
+        a = 2
     elif v > v0:
-        a = -1
+        a = -4
     else:
         a = 0
 
@@ -57,16 +66,12 @@ while running:
 
     if 2 * np.pi - theta + alpha < abs(alpha - theta):
         deltaTheta = 2 * np.pi - theta + alpha
-        print("lentrol fel")
     elif 2 * np.pi + theta - alpha < abs(alpha - theta):
         deltaTheta = - (2 * np.pi + theta - alpha)
-        print("fentrol le")
     else:
         deltaTheta = alpha - theta
     if abs(deltaTheta) > deltaThetaMax:
         deltaTheta = np.sign(deltaTheta) * deltaThetaMax
-    print(deltaTheta)
-
     theta += deltaTheta
 
     if theta >= 2 * np.pi:
@@ -78,6 +83,7 @@ while running:
     VRect[thetaDeg].center = (xs, ys)
     pg.draw.rect(surface, white, rect)
     surface.blit(VSurface[thetaDeg], VRect[thetaDeg])
+    pg.draw.line(surface, black, (0.2 * xmax, 0.1 * ymax), (boostTimer / boostTimerMax * 0.8 * xmax, 0.1 * ymax))
     pg.display.flip()
     remainder = tsim - (0.001 * pg.time.get_ticks() - tstart)
     if remainder > MINSLEEP:
