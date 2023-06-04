@@ -21,10 +21,11 @@ running = True
 
 white = (255, 255, 255)
 pg.init()
-x, y = 0.5, 0.5
+x, y = xmax / ymax * 0.5, 0.5
 theta = np.pi / 2
 deltaThetaMax = 0.005
-v = 0.01
+v0, vmax = 0.5, 1
+v = v0
 
 tsim = 0.0
 tstart = 0.001 * pg.time.get_ticks()
@@ -33,6 +34,16 @@ MINSLEEP = 0.0001
 
 while running:
     tsim = tsim + dt
+    boost = pg.mouse.get_pressed()[0]
+    if boost == True and not v >= vmax:
+        a = 1
+    elif v > v0:
+        a = -1
+    else:
+        a = 0
+
+    v = v + a * dt
+
     vx = v * np.cos(theta)
     vy = v * np.sin(theta)
     x += vx * dt
@@ -48,12 +59,13 @@ while running:
         deltaTheta = 2 * np.pi - theta + alpha
         print("lentrol fel")
     elif 2 * np.pi + theta - alpha < abs(alpha - theta):
-        deltaTheta = 2 * np.pi - theta + alpha
+        deltaTheta = - (2 * np.pi + theta - alpha)
         print("fentrol le")
     else:
         deltaTheta = alpha - theta
     if abs(deltaTheta) > deltaThetaMax:
-        deltaTheta = deltaThetaMax
+        deltaTheta = np.sign(deltaTheta) * deltaThetaMax
+    print(deltaTheta)
 
     theta += deltaTheta
 
@@ -63,7 +75,6 @@ while running:
         theta += 2 * np.pi
 
     thetaDeg = int(np.degrees(theta))
-    print(thetaDeg)
     VRect[thetaDeg].center = (xs, ys)
     pg.draw.rect(surface, white, rect)
     surface.blit(VSurface[thetaDeg], VRect[thetaDeg])
