@@ -7,17 +7,24 @@ reso = (xmax, ymax)
 surface = pg.display.set_mode(reso)
 rect = surface.get_rect()
 
-VSurface = pg.image.load("FlyingV.png")
-VSurface = pg.transform.smoothscale(VSurface, (73, 66))
-VRect = VSurface.get_rect()
+ogVSurface = pg.image.load("FlyingV.png")
+ogVSurface = pg.transform.smoothscale(ogVSurface, (73, 66))
+ogVRect = ogVSurface.get_rect()
+VSurface = []
+VRect = []
+
+for i in range(360):
+    VSurface.append(pg.transform.rotate(ogVSurface, 180 + i))
+    VRect.append(VSurface[i].get_rect())
 
 running = True
 
 white = (255, 255, 255)
 pg.init()
-x, y = 0, 0
+x, y = 0.5, 0.5
 theta = np.pi / 2
-v = 0.1
+deltaThetaMax = 0.005
+v = 0.01
 
 tsim = 0.0
 tstart = 0.001 * pg.time.get_ticks()
@@ -33,10 +40,33 @@ while running:
     xs = int(x * ymax)
     ys = ymax - int(y * ymax)
     xm, ym = pg.mouse.get_pos()
-    theta = np.arctan2(ys - ym, xm - xs)
-    VRect.center = (xs, ys)
+    alpha = np.arctan2(ys - ym, xm - xs)
+    if alpha < 0:
+        alpha += 2 * np.pi
+
+    if 2 * np.pi - theta + alpha < abs(alpha - theta):
+        deltaTheta = 2 * np.pi - theta + alpha
+        print("lentrol fel")
+    elif 2 * np.pi + theta - alpha < abs(alpha - theta):
+        deltaTheta = 2 * np.pi - theta + alpha
+        print("fentrol le")
+    else:
+        deltaTheta = alpha - theta
+    if abs(deltaTheta) > deltaThetaMax:
+        deltaTheta = deltaThetaMax
+
+    theta += deltaTheta
+
+    if theta >= 2 * np.pi:
+        theta -= 2 * np.pi
+    elif theta < 0:
+        theta += 2 * np.pi
+
+    thetaDeg = int(np.degrees(theta))
+    print(thetaDeg)
+    VRect[thetaDeg].center = (xs, ys)
     pg.draw.rect(surface, white, rect)
-    surface.blit(VSurface, VRect)
+    surface.blit(VSurface[thetaDeg], VRect[thetaDeg])
     pg.display.flip()
     remainder = tsim - (0.001 * pg.time.get_ticks() - tstart)
     if remainder > MINSLEEP:
