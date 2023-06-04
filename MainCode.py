@@ -15,23 +15,24 @@ running = True
 white = (255, 255, 255)
 pg.init()
 x, y = 0, 0
-
+vx, vy = 0.1, 0.1
 
 tsim = 0.0
 tstart = 0.001 * pg.time.get_ticks()
-dt = 0.1
-
+dt = 0.001
+MINSLEEP = 0.0001
 
 while running:
-    trun = 0.001 * pg.time.get_ticks() - tstart
-    if trun + dt >= tsim:
-        x += 0.01
-        y += 0.01
-        xs = int(x * ymax)
-        ys = ymax - int(y * ymax)
-        VRect.center = (xs, ys)
-        pg.draw.rect(surface, white, rect)
-        surface.blit(VSurface, VRect)
-        pg.display.flip()
-
+    tsim = tsim + dt
+    x += vx * dt
+    y += vy * dt
+    xs = int(x * ymax)
+    ys = ymax - int(y * ymax)
+    VRect.center = (xs, ys)
+    pg.draw.rect(surface, white, rect)
+    surface.blit(VSurface, VRect)
+    pg.display.flip()
+    remainder = tsim - (0.001 * pg.time.get_ticks() - tstart)
+    if remainder > MINSLEEP:
+        time.sleep(remainder)
 pg.quit()
