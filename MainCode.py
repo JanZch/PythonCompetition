@@ -2,40 +2,46 @@ import pygame as pg
 import time
 import numpy as np
 
+"""Set up window"""
 xmax, ymax = 1280, 720
 reso = (xmax, ymax)
 surface = pg.display.set_mode(reso)
 rect = surface.get_rect()
 
+"""Get Flying V image and transform it"""
 ogVSurface = pg.image.load("FlyingV.png")
 scale = 0.03
-ogVSurface = pg.transform.smoothscale(ogVSurface, (ogVSurface.get_width() * scale, ogVSurface.get_height() * scale))
+ogVSurface = pg.transform.smoothscale(ogVSurface,
+                                      (ogVSurface.get_width() * scale, ogVSurface.get_height() * scale))  # scale down
 ogVRect = ogVSurface.get_rect()
-VSurface = []
-VRect = []
 
-for i in range(360):
+VSurface = []  # array for rotated surfaces
+VRect = []  # array for rotated rectangles
+
+for i in range(360):  # get a rotated image for all 360 degrees
     VSurface.append(pg.transform.rotate(ogVSurface, 180 + i))
     VRect.append(VSurface[i].get_rect())
 
-running = True
-
-white = (255, 255, 255)
-black = (0, 0, 0)
-grey = (178, 190, 181)
-pg.init()
-x, y = xmax / ymax * 0.5, 0.5
-theta = np.pi / 2
-deltaThetaMax = 0.008
-v0, vmax, boostTimerMax = 0.5, 2, 3
+"""Define and set variables"""
+white, black, grey = (255, 255, 255), (0, 0, 0), (178, 190, 181)  # colours
+x, y = xmax / ymax * 0.5, 0.5  # starting position
+theta = np.pi / 2  # starting attitude
+deltaThetaMax = 0.008  # maximum allowed change in attitude in time dt
+v0, vmax = 0.5, 2  # idle velocity, max velocity with boost
 v = v0
-boost = False
-boostTimer = 0
+boostTimerMax, boostTimerMin = 3, 1  # boost capacity, treshold boost level to start
+acc = 2  # acceleration given by boost
+boost = False  # status of boosters
+boostTimer = 0  # current boost level
 
-tsim = 0.0
-tstart = 0.001 * pg.time.get_ticks()
-dt = 0.001
-MINSLEEP = 0.0001
+tsim = 0.0  # current simulated time
+tstart = 0.001 * pg.time.get_ticks()  # starting time
+dt = 0.001  # time step
+MINSLEEP = 0.0001  # minimum time to sleep
+
+"""Main loop"""
+pg.init()  # initialize PyGame
+running = True  # condition for main loop
 
 while running:
     tsim = tsim + dt
