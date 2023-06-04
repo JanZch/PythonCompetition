@@ -1,3 +1,9 @@
+
+"""Basic Rules"""
+# Use camelCase
+# Make headers explaining what this code does
+# Small comments for units, etc.
+
 import pygame as pg
 import time
 import numpy as np
