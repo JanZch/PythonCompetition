@@ -30,7 +30,7 @@ deltaThetaMax = 0.008  # maximum allowed change in attitude in time dt
 v0, vmax = 0.5, 2  # idle velocity, max velocity with boost
 v = v0
 boostTimerMax, boostTimerMin = 3, 1  # boost capacity, treshold boost level to start
-acc = 2  # acceleration given by boost
+acc = 4  # acceleration given by boost
 boost = False  # status of boosters
 boostTimer = 0  # current boost level
 
@@ -44,21 +44,26 @@ pg.init()  # initialize PyGame
 running = True  # condition for main loop
 
 while running:
-    if (pg.mouse.get_pressed()[0] and boostTimer >= 1) or (pg.mouse.get_pressed()[0] and boost and boostTimer >= 0):
-        boost = True
-        boostTimer -= dt
-    else:
-        boost = False
-        boostTimer = min(boostTimer + dt, boostTimerMax)
-    print(boostTimer)
-    if boost and v < vmax:
-        a = 2
-    elif v > v0:
-        a = -4
-    else:
-        a = 0
+    """Inputs"""
+    pressed = pg.mouse.get_pressed()[0]
+    xm, ym = pg.mouse.get_pos()
+    pg.event.pump()
 
-    v = v + a * dt
+    """Check for boost and increment velocity, as neccessary"""
+    if (pressed and boostTimer >= boostTimerMin) or \
+            (pressed and boost and boostTimer >= 0):  # only start if above boostTimerMin, but keep going until empty
+        boost = True  # turn boost on
+        boostTimer -= dt  # decrease boost level
+    else:
+        boost = False  # turn boost off
+        boostTimer = min(boostTimer + dt, boostTimerMax)  # increase boost level if not already at boostTimerMax
+    if boost and v < vmax:
+        a = acc  # accelerate if under vmax
+    elif v > v0:
+        a = -acc  # decelerate if above v0
+    else:
+        a = 0  # steady speed, either v0 or vmax
+    v = v + a * dt  # increment velocity
 
     vx = v * np.cos(theta)
     vy = v * np.sin(theta)
@@ -66,7 +71,7 @@ while running:
     y += vy * dt
     xs = int(x * ymax)
     ys = ymax - int(y * ymax)
-    xm, ym = pg.mouse.get_pos()
+
     alpha = np.arctan2(ys - ym, xm - xs)
     if alpha < 0:
         alpha += 2 * np.pi
@@ -96,11 +101,10 @@ while running:
                  ((0.2 + boostTimer / boostTimerMax * 0.6) * xmax, 0.05 * ymax))
     pg.display.flip()
 
-    pg.quit()
-
-    "Timing loop"
+    "Timing"
     tsim = tsim + dt
     remainder = tsim - (0.001 * pg.time.get_ticks() - tstart)
     if remainder > MINSLEEP:
         time.sleep(remainder)
+
 pg.quit()
