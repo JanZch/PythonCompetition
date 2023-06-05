@@ -36,7 +36,7 @@ thetaV = np.pi / 2  # starting attitude
 deltaThetaMaxV = 0.005  # maximum allowed change in attitude in time dt
 v0, vmax = 0.5, 2  # idle velocity, max velocity with boost
 vV = v0
-boostTimerMax, boostTimerMin = 3, 1  # boost capacity, treshold boost level to start
+boostTimerMax, boostTimerMin = 3, 1  # boost capacity, threshold boost level to start
 acc = 4  # acceleration given by boost
 boost = False  # status of boosters
 boostTimer = 0  # current boost level
@@ -56,7 +56,7 @@ while running:
     xmV, ymV = pg.mouse.get_pos()
     pg.event.pump()
 
-    """Check for boost and increment velocity, as neccessary"""
+    """Check for boost and increment velocity, as necessary"""
     if (pressed and boostTimer >= boostTimerMin) or \
             (pressed and boost and boostTimer >= 0):  # only start if above boostTimerMin, but keep going until empty
         boost = True  # turn boost on
@@ -85,13 +85,13 @@ while running:
                  ((0.2 + boostTimer / boostTimerMax * 0.6) * xMax, 0.05 * yMax))  # line demarking boost level
     pg.display.flip()
 
-    "Timing"
+    """Timing"""
     tSim = tSim + dt
     remainder = tSim - (0.001 * pg.time.get_ticks() - tStart)
     if remainder > minSleep:
         time.sleep(remainder)
 
-    """Break loop if neccessary"""
+    """Break loop if necessary"""
     for event in pg.event.get():
         if event.type == pg.QUIT:
             running = False
