@@ -1,4 +1,3 @@
-
 """Basic Rules"""
 # Use camelCase
 # Make headers explaining what this code does
@@ -9,8 +8,8 @@
     outputs ->: """
 
 import time
-from Missile import * # missile class and methods
-from VFunctions import * # V functions, also used for missile
+from Missile import *  # missile class and methods
+from VFunctions import *  # V functions, also used for missile
 
 """Set up window"""
 xMax, yMax = 1280, 720
@@ -19,7 +18,7 @@ surface = pg.display.set_mode(reso)
 rect = surface.get_rect()
 
 """Get Flying V image and transform it"""
-VSurface, VRect = transformimage("FlyingV.png",0.03)
+VSurface, VRect = transformimage("FlyingV.png", 0.03)
 
 """Define and set variables"""
 xV, yV = xMax / yMax * 0.5, 0.5  # starting position
@@ -37,11 +36,14 @@ tStart = 0.001 * pg.time.get_ticks()  # starting time
 dt = 0.001  # time step
 minSleep = 0.0001  # minimum time to sleep
 
+maxMissile = 0  # set maximum missile count
+
 """Main loop"""
 pg.init()  # initialize PyGame
 running = True  # condition for main loop
 
-i = 0 # placeholder for missile
+counterMissile = 0  # placeholder for missile
+missilesList = []
 
 while running:
     """Inputs"""
@@ -65,22 +67,27 @@ while running:
         a = 0  # steady speed, either v0 or vMax
     vV = vV + a * dt  # increment velocity
 
-    """Missile"""
-    if i == 0:
-        missile1 = missile(xMax, yMax) #create missile
-        i += 1
+
+
+
+    counterMissile += dt
+    if counterMissile > 5:
+        maxMissile += 1
+        counterMissile = 0
 
     """Movement"""
     xV, yV, xsV, ysV, thetaV = move(thetaV, xV, yV, xmV, ymV, deltaThetaMaxV, yMax, dt, vV)  # rotate and move V
-    missile1.move(xsV, ysV, dt) # rotate and move missile
+    for missile in missilesList:
+        missile.move(xsV, ysV, dt)  # rotate and each move missile
 
     """Display"""
     pg.draw.rect(surface, pg.Color("white"), rect)  # colour surface
-    missile1.draw(surface, rect) #draw missile
+    for missile in missilesList:
+        missile.draw(surface, rect)  # draw each missile
     drawobj(thetaV, xsV, ysV, surface, VSurface, VRect)
     drawboost(surface, boostTimer, boostTimerMax, xMax, yMax)
     # /\ display flying V and boost bar, more info in V functions
-    pg.display.flip() #update display
+    pg.display.flip()  # update display
 
     """Timing"""
     tSim = tSim + dt
@@ -94,5 +101,21 @@ while running:
             running = False
         elif event.type == pg.KEYDOWN and event.key == pg.K_ESCAPE:
             running = False
+
+    """Collision"""
+    VHitBox = gethitbox(thetaV, VRect)
+    missileHitBoxes = [missile.hitbox() for missile in missilesList]
+    for index, missile in enumerate(missilesList):
+        if missile != 0:
+            for hit in missile.hitbox().collidelistall(missileHitBoxes):
+                if hit != index:
+                    missilesList[hit], missilesList[index] = 0, 0
+
+    """Missile"""
+    if len(missilesList) < maxMissile:
+        missilesList.append(0)  # add missile slot
+    for index, missile in enumerate(missilesList):
+        if missile == 0:
+            missilesList[index] = Missile(xMax, yMax)
 
 pg.quit()

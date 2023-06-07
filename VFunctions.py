@@ -42,3 +42,7 @@ def drawobj(thetaLoc, xsObjLoc, ysObjLoc, surfaceLoc, objSurfaceLoc, objRectLoc)
     objRectLoc[thetaDeg].center = (xsObjLoc, ysObjLoc)  # get rotated V and position it
     surfaceLoc.blit(objSurfaceLoc[thetaDeg], objRectLoc[thetaDeg])  # put V onto surface
     return
+
+def gethitbox(thetaLoc, objRectLoc):
+    thetaDeg = int(np.degrees(thetaLoc))  # get theta in degrees
+    return objRectLoc[thetaDeg]

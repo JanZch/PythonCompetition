@@ -9,7 +9,8 @@ import random as rand # for choosing starting point
 from movement import * # for moving the missile
 from VFunctions import * # for display and image transform
 
-class missile:
+class Missile:
+    count = 0
     def __init__(self, xMaxInput, yMaxInput): # initialize object
         """Define and set variables"""
         self.xMax, self.yMax = xMaxInput, yMaxInput # get screen size
@@ -17,10 +18,11 @@ class missile:
         self.xMissile, self.yMissile = self.randedge() # get a point on the edge of the screen -> starting point
         self.thetaMissile = np.pi / 2  # starting attitude
         self.deltaThetaMaxMissile = 0.005  # maximum allowed change in attitude in time dt
-        self.v0Missile = 1  # idle velocity
+        self.v0Missile = 0.5  # idle velocity
         self.vMissile = self.v0Missile # set velocity to idle
         self.xsMissile = int(self.xMissile * self.yMax)  # surface coordinate x - not necessary but
         self.ysMissile = self.yMax - int(self.yMissile * self.yMax) # surface coordinate y
+        Missile.count += 1
 
     """Get random point on edge
         -> inputs : xMaxLoc - maximum x coordinate, yMaxLoc - maximum y coordinate
@@ -46,3 +48,5 @@ class missile:
     def draw(self, surface, rect):
         drawobj(self.thetaMissile, self.xsMissile, self.ysMissile, surface, self.MissileSurface, self.MissileRect)
 
+    def hitbox(self):
+        return gethitbox(self.thetaMissile, self.MissileRect)
