@@ -77,7 +77,7 @@ while running:
     """Display"""
     pg.draw.rect(surface, pg.Color("white"), rect)  # colour surface
     missile1.draw(surface, rect) #draw missile
-    display(thetaV, xsV, ysV, surface, VSurface, VRect)
+    drawobj(thetaV, xsV, ysV, surface, VSurface, VRect)
     drawboost(surface, boostTimer, boostTimerMax, xMax, yMax)
     # /\ display flying V and boost bar, more info in V functions
     pg.display.flip() #update display

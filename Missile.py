@@ -17,7 +17,7 @@ class missile:
         self.xMissile, self.yMissile = self.randedge() # get a point on the edge of the screen -> starting point
         self.thetaMissile = np.pi / 2  # starting attitude
         self.deltaThetaMaxMissile = 0.005  # maximum allowed change in attitude in time dt
-        self.v0Missile = 0.5  # idle velocity
+        self.v0Missile = 1  # idle velocity
         self.vMissile = self.v0Missile # set velocity to idle
         self.xsMissile = int(self.xMissile * self.yMax)  # surface coordinate x - not necessary but
         self.ysMissile = self.yMax - int(self.yMissile * self.yMax) # surface coordinate y
@@ -44,5 +44,5 @@ class missile:
         -> inputs : surface - surface on which it is drawn, rect - the rect object of the surface
         outputs ->: none, draws the missile"""
     def draw(self, surface, rect):
-        display(self.thetaMissile, self.xsMissile, self.ysMissile, surface, self.MissileSurface, self.MissileRect)
+        drawobj(self.thetaMissile, self.xsMissile, self.ysMissile, surface, self.MissileSurface, self.MissileRect)
 

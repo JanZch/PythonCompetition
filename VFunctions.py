@@ -37,7 +37,7 @@ def drawboost(surfaceLoc, boostTimerLoc, boostTimerMaxLoc, xMaxLoc, yMaxLoc):
     -> inputs : thetaLoc - rotation of the object, xsObjLoc, ysObjLoc - surface coordinates surfaceLoc, objSurfaceLoc - screen and object surface, 
                 objRectLoc - object rectangle
     outputs ->: """
-def display(thetaLoc, xsObjLoc, ysObjLoc, surfaceLoc, objSurfaceLoc, objRectLoc):
+def drawobj(thetaLoc, xsObjLoc, ysObjLoc, surfaceLoc, objSurfaceLoc, objRectLoc):
     thetaDeg = int(np.degrees(thetaLoc))  # get theta in degrees
     objRectLoc[thetaDeg].center = (xsObjLoc, ysObjLoc)  # get rotated V and position it
     surfaceLoc.blit(objSurfaceLoc[thetaDeg], objRectLoc[thetaDeg])  # put V onto surface
