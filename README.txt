@@ -1,25 +1,11 @@
 # PythonCompetition
 
-IDEA 1
-  Main Gameplay:
-• Asteroids 
-• Bodies are probably stationary and projectiles are affected by their gravity
-  AI:
-• There is an enemy(ies) 
-• The AI can move and shoot
-• It has waypoints on a map that tell it where to go
-• the AI moves between waypoints depending on player position and tries to shoot meanwhile
-
-IDEA 2
-  Main Gameplay:
-• Flying V dodging missiles
-• Top-down view, continuous speed, can only control direction
-• Missiles have the same velocity, but lower turn rate
-• Flying V has a turbo, where you can temporarily increase speed to outrun missiles
-• Area loops
-• More and more missiles as time goes on
-• Missiles come in from edge of the map
-• Extra: radar-guided and heat-seeking missiles, chaff and flares
+To do:
+missile collision
+multiple missiles
+points, lives
+gameover
+Sidescrolling
   
 
 Rules:
@@ -38,3 +24,26 @@ lead to a fraud being reported to the exam committee.
 – Use comment lines, whitespace and docstrings
 – Use sensible names for variables and functions
 – Use two or more script files to organize your project
+
+Brainstorming 
+
+IDEA 1
+  Main Gameplay:
+• Asteroids 
+• Bodies are probably stationary and projectiles are affected by their gravity
+  AI:
+• There is an enemy(ies) 
+• The AI can move and shoot
+• It has waypoints on a map that tell it where to go
+• the AI moves between waypoints depending on player position and tries to shoot meanwhile
+
+IDEA 2 <---- THIS ONE
+  Main Gameplay:
+• Flying V dodging missiles
+• Top-down view, continuous speed, can only control direction
+• Missiles have the same velocity, but lower turn rate
+• Flying V has a turbo, where you can temporarily increase speed to outrun missiles
+• Area loops
+• More and more missiles as time goes on
+• Missiles come in from edge of the map
+• Extra: radar-guided and heat-seeking missiles, chaff and flares
