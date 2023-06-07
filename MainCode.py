@@ -43,7 +43,7 @@ pg.init()  # initialize PyGame
 running = True  # condition for main loop
 
 counterMissile = 0  # placeholder for missile
-missilesList = []
+missilesList = []  # list of missiles
 
 while running:
     """Inputs"""
@@ -67,9 +67,7 @@ while running:
         a = 0  # steady speed, either v0 or vMax
     vV = vV + a * dt  # increment velocity
 
-
-
-
+    """Counter to increase maximum missile count"""
     counterMissile += dt
     if counterMissile > 5:
         maxMissile += 1
