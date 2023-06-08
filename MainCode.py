@@ -40,10 +40,16 @@ maxMissile = 0  # set maximum missile count
 timerMaxMissile = 0  # counter for maximum missiles
 timerSpawnMissile = 1  # counter for spawning missiles
 missilesList = []  # list of missiles
+explosionsRect = []  # boxes for explosions
+explosionsFrame = []  # list for tracking explosion frames
+frameTimer = 0
 
 """Main loop"""
 pg.init()  # initialize PyGame
 running = True  # condition for main loop
+
+explosionSurfaces = [pg.transform.scale(pg.image.load("Explosion\Explosion " + str(i) + ".png"), (50, 50)) for i in
+                     range(16)]
 
 while running:
     """Inputs"""
@@ -78,6 +84,26 @@ while running:
     for missile in missilesList:
         if missile != 0:  # check if missile slot is empty
             missile.draw(surface, rect)  # draw each missile
+
+    """Explosion handler"""
+    if len(explosionsRect) > 0:  # check if there are explosions
+        for explosionIndex, frame in enumerate(explosionsFrame):
+            if frame <= 15:  # if the animation is not finished
+                surface.blit(explosionSurfaces[frame], explosionsRect[explosionIndex])  # draw frame
+                if frameTimer > 0.2:
+                    explosionsFrame[explosionIndex] += 1  # step forward 1 frame
+            else:
+                explosionsFrame[explosionIndex] = -1
+
+    for index, frame in enumerate(explosionsFrame):  # garbage collector
+        if frame == -1:
+            explosionsRect.pop(index)  # get rid of ended explosions
+            explosionsFrame.pop(index)
+
+    if frameTimer > 0.2:  # reset timer
+        frameTimer = 0
+    frameTimer += dt  # move timer forward
+
     drawobj(thetaV, xsV, ysV, surface, VSurface, VRect)
     drawboost(surface, boostTimer, boostTimerMax, xMax, yMax)
     # /\ display flying V and boost bar, more info in V functions
@@ -111,14 +137,16 @@ while running:
             missileHitBoxes.append(missile.hitbox())
         else:
             missileHitBoxes.append(pg.Rect(0, 0, 0, 0))
-
-    if VHitBox.collidelist(missileHitBoxes) >= 0:  # check collision with V
-        running = False
+    #
+    # if VHitBox.collidelist(missileHitBoxes) >= 0:  # check collision with V
+    #     running = False
 
     for index, missile in enumerate(missilesList):
         if missile != 0:  # check if missile slot is empty
             for hit in missile.hitbox().collidelistall(missileHitBoxes):
                 if hit != index:
+                    explosionsRect.append(missilesList[hit].hitbox())
+                    explosionsFrame.append(0)
                     missilesList[hit], missilesList[index] = 0, 0
 
     """Break loop if necessary"""
