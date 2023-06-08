@@ -95,20 +95,13 @@ while running:
         missilesList.append(0)  # add missile slot
         timerMaxMissile = 0
 
-    """Missile"""
+    """Missile spawning"""
     if len(missilesList) > 0:
         timerSpawnMissile += dt
     for index, missile in enumerate(missilesList):
         if missile == 0 and timerSpawnMissile > 1:
             missilesList[index] = Missile(xMax, yMax)
             timerSpawnMissile = 0
-
-    """Break loop if necessary"""
-    for event in pg.event.get():
-        if event.type == pg.QUIT:
-            running = False
-        elif event.type == pg.KEYDOWN and event.key == pg.K_ESCAPE:
-            running = False
 
     """Collision"""
     VHitBox = gethitbox(thetaV, VRect)
@@ -118,10 +111,21 @@ while running:
             missileHitBoxes.append(missile.hitbox())
         else:
             missileHitBoxes.append(pg.Rect(0, 0, 0, 0))
+
+    if VHitBox.collidelist(missileHitBoxes) >= 0:  # check collision with V
+        running = False
+
     for index, missile in enumerate(missilesList):
         if missile != 0:  # check if missile slot is empty
             for hit in missile.hitbox().collidelistall(missileHitBoxes):
                 if hit != index:
                     missilesList[hit], missilesList[index] = 0, 0
+
+    """Break loop if necessary"""
+    for event in pg.event.get():
+        if event.type == pg.QUIT:
+            running = False
+        elif event.type == pg.KEYDOWN and event.key == pg.K_ESCAPE:
+            running = False
 
 pg.quit()
