@@ -28,11 +28,11 @@ class Missile:
         -> inputs : xMaxLoc - maximum x coordinate, yMaxLoc - maximum y coordinate
         outputs ->: xMissileLoc - missile x coordinate, yMissileLoc - missile y coordinate"""
     def randedge(self):
-        xMissileLoc = rand.choice((0,rand.uniform(0,16/9)))  # choose random x coordinate
+        xMissileLoc = rand.choice((0, rand.uniform(0, 16/9)))  # choose random x coordinate
         if xMissileLoc != 0:  # if the x coordinate is not zero, set the y coordinate to zero or yMax -> top or bottom edge
-            yMissileLoc = rand.choice((0,1))
+            yMissileLoc = rand.choice((0, 1))
         else:
-            yMissileLoc = rand.uniform(0,1)
+            yMissileLoc = rand.uniform(0, 1)
         return xMissileLoc, yMissileLoc
 
     """Move missile to flying V
