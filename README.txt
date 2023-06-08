@@ -1,8 +1,9 @@
 # PythonCompetition
 
 To do:
-missile collision
-multiple missiles
+balancing work 
+ - make misslemaxtimer a function of time
+ - adjust speeds and turn speeds
 points, lives
 gameover
 Sidescrolling
