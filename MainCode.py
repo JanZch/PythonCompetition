@@ -37,13 +37,13 @@ dt = 0.001  # time step
 minSleep = 0.0001  # minimum time to sleep
 
 maxMissile = 0  # set maximum missile count
+timerMaxMissile = 0  # counter for maximum missiles
+timerSpawnMissile = 1  # counter for spawning missiles
+missilesList = []  # list of missiles
 
 """Main loop"""
 pg.init()  # initialize PyGame
 running = True  # condition for main loop
-
-counterMissile = 0  # placeholder for missile
-missilesList = []  # list of missiles
 
 while running:
     """Inputs"""
@@ -67,21 +67,17 @@ while running:
         a = 0  # steady speed, either v0 or vMax
     vV = vV + a * dt  # increment velocity
 
-    """Counter to increase maximum missile count"""
-    counterMissile += dt
-    if counterMissile > 5:
-        maxMissile += 1
-        counterMissile = 0
-
     """Movement"""
     xV, yV, xsV, ysV, thetaV = move(thetaV, xV, yV, xmV, ymV, deltaThetaMaxV, yMax, dt, vV)  # rotate and move V
     for missile in missilesList:
-        missile.move(xsV, ysV, dt)  # rotate and each move missile
+        if missile != 0:  # check if missile slot is empty
+            missile.move(xsV, ysV, dt)  # rotate and each move missile
 
     """Display"""
     pg.draw.rect(surface, pg.Color("white"), rect)  # colour surface
     for missile in missilesList:
-        missile.draw(surface, rect)  # draw each missile
+        if missile != 0:  # check if missile slot is empty
+            missile.draw(surface, rect)  # draw each missile
     drawobj(thetaV, xsV, ysV, surface, VSurface, VRect)
     drawboost(surface, boostTimer, boostTimerMax, xMax, yMax)
     # /\ display flying V and boost bar, more info in V functions
@@ -93,27 +89,43 @@ while running:
     if remainder > minSleep:
         time.sleep(remainder)
 
+    """Counter to increase maximum missile count"""
+    timerMaxMissile += dt
+    if timerMaxMissile > 2:
+        missilesList.append(0)  # add missile slot
+        timerMaxMissile = 0
+
+    """Missile spawning"""
+    if len(missilesList) > 0:
+        timerSpawnMissile += dt
+    for index, missile in enumerate(missilesList):
+        if missile == 0 and timerSpawnMissile > 1:
+            missilesList[index] = Missile(xMax, yMax)
+            timerSpawnMissile = 0
+
+    """Collision"""
+    VHitBox = gethitbox(thetaV, VRect)
+    missileHitBoxes = []
+    for missile in missilesList:
+        if missile != 0:  # check if missile slot is empty
+            missileHitBoxes.append(missile.hitbox())
+        else:
+            missileHitBoxes.append(pg.Rect(0, 0, 0, 0))
+
+    if VHitBox.collidelist(missileHitBoxes) >= 0:  # check collision with V
+        running = False
+
+    for index, missile in enumerate(missilesList):
+        if missile != 0:  # check if missile slot is empty
+            for hit in missile.hitbox().collidelistall(missileHitBoxes):
+                if hit != index:
+                    missilesList[hit], missilesList[index] = 0, 0
+
     """Break loop if necessary"""
     for event in pg.event.get():
         if event.type == pg.QUIT:
             running = False
         elif event.type == pg.KEYDOWN and event.key == pg.K_ESCAPE:
             running = False
-
-    """Collision"""
-    VHitBox = gethitbox(thetaV, VRect)
-    missileHitBoxes = [missile.hitbox() for missile in missilesList]
-    for index, missile in enumerate(missilesList):
-        if missile != 0:
-            for hit in missile.hitbox().collidelistall(missileHitBoxes):
-                if hit != index:
-                    missilesList[hit], missilesList[index] = 0, 0
-
-    """Missile"""
-    if len(missilesList) < maxMissile:
-        missilesList.append(0)  # add missile slot
-    for index, missile in enumerate(missilesList):
-        if missile == 0:
-            missilesList[index] = Missile(xMax, yMax)
 
 pg.quit()

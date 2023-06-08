@@ -5,31 +5,31 @@
 
 """Code for the missile"""
 
-import random as rand # for choosing starting point
-from movement import * # for moving the missile
-from VFunctions import * # for display and image transform
+import random as rand  # for choosing starting point
+from movement import *  # for moving the missile
+from VFunctions import *  # for display and image transform
 
 class Missile:
     count = 0
     def __init__(self, xMaxInput, yMaxInput): # initialize object
         """Define and set variables"""
-        self.xMax, self.yMax = xMaxInput, yMaxInput # get screen size
-        self.MissileSurface, self.MissileRect = transformimage("Sidewinder.png",0.03) # transform image
-        self.xMissile, self.yMissile = self.randedge() # get a point on the edge of the screen -> starting point
+        self.xMax, self.yMax = xMaxInput, yMaxInput  # get screen size
+        self.MissileSurface, self.MissileRect = transformimage("Sidewinder.png",0.03)  # transform image
+        self.xMissile, self.yMissile = self.randedge()  # get a point on the edge of the screen -> starting point
         self.thetaMissile = np.pi / 2  # starting attitude
         self.deltaThetaMaxMissile = 0.005  # maximum allowed change in attitude in time dt
         self.v0Missile = 0.3  # idle velocity
-        self.vMissile = self.v0Missile # set velocity to idle
+        self.vMissile = self.v0Missile  # set velocity to idle
         self.xsMissile = int(self.xMissile * self.yMax)  # surface coordinate x - not necessary but
-        self.ysMissile = self.yMax - int(self.yMissile * self.yMax) # surface coordinate y
-        Missile.count += 1
+        self.ysMissile = self.yMax - int(self.yMissile * self.yMax)  # surface coordinate y
+        Missile.count += 1  # counter of how many missiles were spawned
 
     """Get random point on edge
         -> inputs : xMaxLoc - maximum x coordinate, yMaxLoc - maximum y coordinate
         outputs ->: xMissileLoc - missile x coordinate, yMissileLoc - missile y coordinate"""
     def randedge(self):
-        xMissileLoc = rand.choice((0,rand.uniform(0,16/9))) # choose random x coordinate
-        if xMissileLoc != 0: # if the x coordinate is not zero, set the y coordinate to zero or yMax -> top or bottom edge
+        xMissileLoc = rand.choice((0,rand.uniform(0,16/9)))  # choose random x coordinate
+        if xMissileLoc != 0:  # if the x coordinate is not zero, set the y coordinate to zero or yMax -> top or bottom edge
             yMissileLoc = rand.choice((0,1))
         else:
             yMissileLoc = rand.uniform(0,1)
