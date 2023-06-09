@@ -1,3 +1,5 @@
+import random as rand
+
 import pygame as pg
 import numpy as np
 
@@ -39,29 +41,29 @@ def drawboost(surfaceLoc, boostTimerLoc, boostTimerMaxLoc, xMaxLoc, yMaxLoc):
     return
 
 
-def drawborders(surfaceLoc, timerSpawnMissileLoc, timerSpawnMissileLimitLoc, xMaxLoc, yMaxLoc,
-                borderThicknessLoc, borderColLoc):
+def drawborders(surfaceLoc, timerSpawnMissileLoc, timerSpawnMissileLimitLoc,
+                xMaxLoc, yMaxLoc, xMissileInit, yMissileInit, borderThicknessLoc, borderColLoc):
     alpha = int(255 * timerSpawnMissileLoc / timerSpawnMissileLimitLoc)  # set opacity of red border
-
-    redRect1 = pg.Surface((xMaxLoc, borderThicknessLoc))  # top
-    redRect1.set_alpha(alpha)
-    redRect1.fill(borderColLoc)
-    surfaceLoc.blit(redRect1, (0, 0))
-
-    redRect2 = pg.Surface((xMaxLoc, borderThicknessLoc))  # bottom
-    redRect2.set_alpha(alpha)
-    redRect2.fill(borderColLoc)
-    surfaceLoc.blit(redRect2, (0, yMaxLoc - borderThicknessLoc))
-
-    redRect3 = pg.Surface((borderThicknessLoc, yMaxLoc - 2 * borderThicknessLoc))  # left
-    redRect3.set_alpha(alpha)
-    redRect3.fill(borderColLoc)
-    surfaceLoc.blit(redRect3, (0, borderThicknessLoc))
-
-    redRect4 = pg.Surface((borderThicknessLoc, yMaxLoc - 2 * borderThicknessLoc))  # right
-    redRect4.set_alpha(alpha)
-    redRect4.fill(borderColLoc)
-    surfaceLoc.blit(redRect4, (xMaxLoc - borderThicknessLoc, borderThicknessLoc))
+    if yMissileInit == 1:
+        redRect1 = pg.Surface((0.6 * xMaxLoc, borderThicknessLoc))  # top
+        redRect1.set_alpha(alpha)
+        redRect1.fill(borderColLoc)
+        surfaceLoc.blit(redRect1, (0.2 * xMaxLoc, 0))
+    if yMissileInit == 0:
+        redRect2 = pg.Surface((0.6 * xMaxLoc, borderThicknessLoc))  # bottom
+        redRect2.set_alpha(alpha)
+        redRect2.fill(borderColLoc)
+        surfaceLoc.blit(redRect2, (0.2 * xMaxLoc, yMaxLoc - borderThicknessLoc))
+    if xMissileInit == 0:
+        redRect3 = pg.Surface((borderThicknessLoc, 0.6 * yMaxLoc))  # left
+        redRect3.set_alpha(alpha)
+        redRect3.fill(borderColLoc)
+        surfaceLoc.blit(redRect3, (0, 0.2 * yMaxLoc))
+    if xMissileInit == 16 / 9:
+        redRect4 = pg.Surface((borderThicknessLoc, 0.6 * yMaxLoc))  # right
+        redRect4.set_alpha(alpha)
+        redRect4.fill(borderColLoc)
+        surfaceLoc.blit(redRect4, (xMaxLoc - borderThicknessLoc, 0.2 * yMaxLoc))
 
 
 def drawtext(surfaceLoc, textFontLoc, textColLoc, xMaxLoc, yMaxLoc, tAbsLoc, missilesDownLoc):
@@ -94,3 +96,12 @@ def drawobj(thetaLoc, xsObjLoc, ysObjLoc, surfaceLoc, objSurfaceLoc, objRectLoc)
 def gethitbox(thetaLoc, objRectLoc):
     thetaDeg = int(np.degrees(thetaLoc))  # get theta in degrees
     return objRectLoc[thetaDeg]
+
+
+def randedge():
+    xMissileLoc = rand.choice((0, rand.uniform(0, 16 / 9), 16 / 9))  # choose random x coordinate
+    if xMissileLoc != 0 and xMissileLoc != 16 / 9:  # if the x coordinate is not zero, set the y coordinate to zero or yMax -> top or bottom edge
+        yMissileLoc = rand.choice((0, 1))
+    else:
+        yMissileLoc = rand.uniform(0, 1)
+    return xMissileLoc, yMissileLoc

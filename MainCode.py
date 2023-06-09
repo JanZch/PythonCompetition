@@ -22,12 +22,12 @@ rect = surface.get_rect()
 
 """Get Flying V image and transform it"""
 VSurface, VRect = transformimage("FlyingV.png", 0.03)
-VRectHit = pg.Rect.inflate(VRect, (-2, -2))
+# VRectHit = pg.Rect.inflate(VRect, (-2, -2))
 
 """Define and set variables"""
 xV, yV = xMax / yMax * 0.5, 0.5  # starting position
 thetaV = np.pi / 2  # starting attitude
-deltaThetaMaxV = 0.005  # maximum allowed change in attitude in time dt
+deltaThetaMaxV = 0.05  # maximum allowed change in attitude in time dt
 v0, vMax = 0.5, 2  # idle velocity, max velocity with boost
 vV = v0
 boostTimerMax, boostTimerMin = 3, 1  # boost capacity, threshold boost level to start
@@ -37,7 +37,7 @@ boostTimer = 0  # current boost level
 
 tSim = 0.0  # current simulated time
 tStart = 0.001 * pg.time.get_ticks()  # starting time
-dt = 0.001  # time step
+dt = 0.01  # time step
 minSleep = 0.0001  # minimum time to sleep
 
 maxMissile = 0  # set maximum missile count
@@ -46,6 +46,8 @@ timerSpawnMissile = 0  # counter for spawning missiles
 timerMaxMissileLimit = 3  # how often missile list is expanded
 timerSpawnMissileLimit = 2  # how often new missile spawns (if slot available)
 timerSpawnMissileBool = False  # defined whether next missile is on queue
+posMissileInitSet = False
+xMissileInit, yMissileInit = 0, 0
 missilesHardCap = 20  # max amount of possible missiles
 missilesList = []  # list of missiles
 missilesDown = 0  # points
@@ -56,7 +58,7 @@ borderThickness = xMax / 200  # thickness of warning frame
 borderCol = pg.Color("green")  # border colour
 textCol = pg.Color("green")
 textFont = pg.font.SysFont("courier", 25)  # text font
-background = pg.image.load("Delft.png")
+background = pg.image.load("Delftorange.jpg")
 
 """Main loop"""
 running = True  # condition for main loop
@@ -100,8 +102,8 @@ while running:
         time.sleep(remainder)
 
     """Display"""
-    pg.draw.rect(surface, pg.Color("white"), rect)
-    # surface.blit(background, (0, 0))  # colour surface
+    # pg.draw.rect(surface, pg.Color("white"), rect)
+    surface.blit(background, (0, 0))  # colour surface
     for missile in missilesList:
         if missile != 0:  # check if missile slot is empty
             missile.draw(surface, rect)  # draw each missile
@@ -129,12 +131,12 @@ while running:
     drawboost(surface, boostTimer, boostTimerMax, xMax, yMax)
     # /\ display flying V and boost bar, more info in V functions
 
-    drawborders(surface, timerSpawnMissile, timerSpawnMissileLimit, xMax, yMax, borderThickness, borderCol)
-
     drawtext(surface, textFont, textCol, xMax, yMax, tAbs, missilesDown)
 
-    pg.display.flip()  # update display
+    drawborders(surface, timerSpawnMissile, timerSpawnMissileLimit, xMax, yMax, xMissileInit, yMissileInit,
+                borderThickness, borderCol)
 
+    pg.display.flip()  # update display
 
     """Counter to increase maximum missile count"""
     timerMaxMissile += dt
@@ -147,15 +149,20 @@ while running:
     for index, missile in enumerate(missilesList):
         if missile == 0:
             timerSpawnMissileBool = True
+            if not posMissileInitSet:
+                xMissileInit, yMissileInit = randedge()
+                posMissileInitSet = True
             if timerSpawnMissile > timerSpawnMissileLimit:
-                missilesList[index] = Missile(xMax, yMax)
+                print(xMissileInit, yMissileInit)
+                missilesList[index] = Missile(xMax, yMax, xMissileInit, yMissileInit)
                 timerSpawnMissile = 0
                 timerSpawnMissileBool = False
+                posMissileInitSet = False
     if timerSpawnMissileBool:
         timerSpawnMissile += dt
 
     """Collision"""
-    VHitBox = gethitbox(thetaV, VRectHit)
+    VHitBox = gethitbox(thetaV, VRect)
     missileHitBoxes = []
     for missile in missilesList:
         if missile != 0:  # check if missile slot is empty
@@ -163,14 +170,14 @@ while running:
         else:
             missileHitBoxes.append(pg.Rect(0, 0, 0, 0))
 
-    if VHitBox.collidelist(missileHitBoxes) >= 0:  # check collision with V
-        running = False
+    # if VHitBox.collidelist(missileHitBoxes) >= 0:  # check collision with V
+    #     running = False
 
     for index, missile in enumerate(missilesList):  # missile to missile collision
         if missile != 0:  # check if missile slot is empty
             for hit in missile.hitbox().collidelistall(missileHitBoxes):
                 if hit != index:
-                    explosionsRect.append(missilesList[hit].hitbox())
+                    explosionsRect.append(missilesList[index].hitbox())
                     explosionsFrame.append(0)
                     missilesList[hit], missilesList[index] = 0, 0
                     missilesDown += 1

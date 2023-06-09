@@ -11,19 +11,17 @@ import random as rand  # for choosing starting point
 from movement import *  # for moving the missile
 from VFunctions import *  # for display and image transform
 
-import scipy as sp
-
 
 class Missile:
     count = 0
 
-    def __init__(self, xMaxInput, yMaxInput):  # initialize object
+    def __init__(self, xMaxInput, yMaxInput, xMissileInit, yMissileInit):  # initialize object
         """Define and set variables"""
         self.xMax, self.yMax = xMaxInput, yMaxInput  # get screen size
-        self.MissileSurface, self.MissileRect = transformimage("Sidewinder.png", 0.03)  # transform image
-        self.xMissile, self.yMissile = self.randedge()  # get a point on the edge of the screen -> starting point
+        self.MissileSurface, self.MissileRect = transformimage("Sidewinder.png", 0.05)  # transform image
+        self.xMissile, self.yMissile = xMissileInit, yMissileInit  # get a point on the edge of the screen -> starting point
         self.thetaMissile = np.pi / 2  # starting attitude
-        self.deltaThetaMaxMissile = rand.uniform(0.001, 0.01)  # maximum allowed change in attitude in time dt
+        self.deltaThetaMaxMissile = rand.uniform(0.01, 0.1)  # maximum allowed change in attitude in time dt
         self.v0Missile = rand.uniform(0.1, 0.7)  # idle velocity
         self.vMissile = self.v0Missile  # set velocity to idle
         self.xsMissile = int(self.xMissile * self.yMax)  # surface coordinate x - not necessary but
@@ -34,14 +32,6 @@ class Missile:
     """Get random point on edge
         -> inputs : xMaxLoc - maximum x coordinate, yMaxLoc - maximum y coordinate
         outputs ->: xMissileLoc - missile x coordinate, yMissileLoc - missile y coordinate"""
-
-    def randedge(self):
-        xMissileLoc = rand.choice((0, rand.uniform(0, 16 / 9)))  # choose random x coordinate
-        if xMissileLoc != 0:  # if the x coordinate is not zero, set the y coordinate to zero or yMax -> top or bottom edge
-            yMissileLoc = rand.choice((0, 1))
-        else:
-            yMissileLoc = rand.uniform(0, 1)
-        return xMissileLoc, yMissileLoc
 
     """Move missile to flying V
         -> inputs : xsV, ysV - screen coordinates of the V, dt - timestep
@@ -58,7 +48,8 @@ class Missile:
         xsTarget = int(xTarget * self.yMax)
         ysTarget = self.yMax - int(yTarget * self.yMax)
         self.xMissile, self.yMissile, self.xsMissile, self.ysMissile, self.thetaMissile = \
-            move(self.thetaMissile, self.xMissile, self.yMissile, xsTarget, ysTarget, self.deltaThetaMaxMissile, self.yMax, dt,
+            move(self.thetaMissile, self.xMissile, self.yMissile, xsTarget, ysTarget, self.deltaThetaMaxMissile,
+                 self.yMax, dt,
                  self.vMissile)  # rotate and move missile
 
     """Display the missile
