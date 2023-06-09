@@ -22,6 +22,7 @@ rect = surface.get_rect()
 
 """Get Flying V image and transform it"""
 VSurface, VRect = transformimage("FlyingV.png", 0.03)
+VRectHit = pg.Rect.inflate(VRect, (-2, -2))
 
 """Define and set variables"""
 xV, yV = xMax / yMax * 0.5, 0.5  # starting position
@@ -51,11 +52,11 @@ missilesDown = 0  # points
 explosionsRect = []  # boxes for explosions
 explosionsFrame = []  # list for tracking explosion frames
 frameTimer = 0
-borderThickness = xMax / 150  # thickness of warning frame
-borderCol = pg.Color("dark red")  # border colour
-textCol = pg.Color("black")
-textFont = pg.font.SysFont("courier", 20)  # text font
-# print(pg.font.get_fonts())
+borderThickness = xMax / 200  # thickness of warning frame
+borderCol = pg.Color("green")  # border colour
+textCol = pg.Color("green")
+textFont = pg.font.SysFont("courier", 25)  # text font
+background = pg.image.load("Delft.png")
 
 """Main loop"""
 running = True  # condition for main loop
@@ -99,7 +100,8 @@ while running:
         time.sleep(remainder)
 
     """Display"""
-    pg.draw.rect(surface, pg.Color("white"), rect)  # colour surface
+    pg.draw.rect(surface, pg.Color("white"), rect)
+    # surface.blit(background, (0, 0))  # colour surface
     for missile in missilesList:
         if missile != 0:  # check if missile slot is empty
             missile.draw(surface, rect)  # draw each missile
@@ -127,38 +129,9 @@ while running:
     drawboost(surface, boostTimer, boostTimerMax, xMax, yMax)
     # /\ display flying V and boost bar, more info in V functions
 
-    """Display red borders"""
-    alpha = int(255 * timerSpawnMissile / timerSpawnMissileLimit)  # set opacity of red border
+    drawborders(surface, timerSpawnMissile, timerSpawnMissileLimit, xMax, yMax, borderThickness, borderCol)
 
-    redRect1 = pg.Surface((xMax, borderThickness))  # top
-    redRect1.set_alpha(alpha)
-    redRect1.fill(borderCol)
-    surface.blit(redRect1, (0, 0))
-
-    redRect2 = pg.Surface((xMax, borderThickness))  # bottom
-    redRect2.set_alpha(alpha)
-    redRect2.fill(borderCol)
-    surface.blit(redRect2, (0, yMax - borderThickness))
-
-    redRect3 = pg.Surface((borderThickness, yMax - 2 * borderThickness))  # left
-    redRect3.set_alpha(alpha)
-    redRect3.fill(borderCol)
-    surface.blit(redRect3, (0, borderThickness))
-
-    redRect4 = pg.Surface((borderThickness, yMax - 2 * borderThickness))  # right
-    redRect4.set_alpha(alpha)
-    redRect4.fill(borderCol)
-    surface.blit(redRect4, (xMax - borderThickness, borderThickness))
-
-    """Display text"""
-    timeLabel = textFont.render(str(round(tAbs, 2)), True, textCol)
-    surface.blit(timeLabel, (0.2 * xMax, 0.05 * yMax))
-
-    pointsLabel = textFont.render(str(missilesDown), True, textCol)
-    pointsLabelRect = pointsLabel.get_rect()
-    pointsLabelRect.right = 0.8 * xMax
-    pointsLabelRect.top = 0.05 * yMax
-    surface.blit(pointsLabel, pointsLabelRect)
+    drawtext(surface, textFont, textCol, xMax, yMax, tAbs, missilesDown)
 
     pg.display.flip()  # update display
 
@@ -182,7 +155,7 @@ while running:
         timerSpawnMissile += dt
 
     """Collision"""
-    VHitBox = gethitbox(thetaV, VRect)
+    VHitBox = gethitbox(thetaV, VRectHit)
     missileHitBoxes = []
     for missile in missilesList:
         if missile != 0:  # check if missile slot is empty

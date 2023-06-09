@@ -31,12 +31,51 @@ def transformimage(pathLoc, scaleLoc):
 
 
 def drawboost(surfaceLoc, boostTimerLoc, boostTimerMaxLoc, xMaxLoc, yMaxLoc):
-    pg.draw.line(surfaceLoc, pg.Color("grey"), (0.2 * xMaxLoc, 0.05 * yMaxLoc),
-                 (0.8 * xMaxLoc, 0.05 * yMaxLoc))  # line demarking boost capacity
-    pg.draw.line(surfaceLoc, pg.Color("black"), (0.2 * xMaxLoc, 0.05 * yMaxLoc),
+    # pg.draw.line(surfaceLoc, pg.Color("grey"), (0.2 * xMaxLoc, 0.05 * yMaxLoc),
+    #              (0.8 * xMaxLoc, 0.05 * yMaxLoc))  # line demarking boost capacity
+    pg.draw.line(surfaceLoc, pg.Color("green"), (0.2 * xMaxLoc, 0.05 * yMaxLoc),
                  ((0.2 + boostTimerLoc / boostTimerMaxLoc * 0.6) * xMaxLoc,
                   0.05 * yMaxLoc))  # line demarking boost level
     return
+
+
+def drawborders(surfaceLoc, timerSpawnMissileLoc, timerSpawnMissileLimitLoc, xMaxLoc, yMaxLoc,
+                borderThicknessLoc, borderColLoc):
+    alpha = int(255 * timerSpawnMissileLoc / timerSpawnMissileLimitLoc)  # set opacity of red border
+
+    redRect1 = pg.Surface((xMaxLoc, borderThicknessLoc))  # top
+    redRect1.set_alpha(alpha)
+    redRect1.fill(borderColLoc)
+    surfaceLoc.blit(redRect1, (0, 0))
+
+    redRect2 = pg.Surface((xMaxLoc, borderThicknessLoc))  # bottom
+    redRect2.set_alpha(alpha)
+    redRect2.fill(borderColLoc)
+    surfaceLoc.blit(redRect2, (0, yMaxLoc - borderThicknessLoc))
+
+    redRect3 = pg.Surface((borderThicknessLoc, yMaxLoc - 2 * borderThicknessLoc))  # left
+    redRect3.set_alpha(alpha)
+    redRect3.fill(borderColLoc)
+    surfaceLoc.blit(redRect3, (0, borderThicknessLoc))
+
+    redRect4 = pg.Surface((borderThicknessLoc, yMaxLoc - 2 * borderThicknessLoc))  # right
+    redRect4.set_alpha(alpha)
+    redRect4.fill(borderColLoc)
+    surfaceLoc.blit(redRect4, (xMaxLoc - borderThicknessLoc, borderThicknessLoc))
+
+
+def drawtext(surfaceLoc, textFontLoc, textColLoc, xMaxLoc, yMaxLoc, tAbsLoc, missilesDownLoc):
+    timeLabel = textFontLoc.render(str(round(tAbsLoc, 2)), True, textColLoc)
+    timeLabelRect = timeLabel.get_rect()
+    timeLabelRect.left = 0.2 * xMaxLoc
+    timeLabelRect.top = 0.05 * yMaxLoc
+    surfaceLoc.blit(timeLabel, timeLabelRect)
+
+    pointsLabel = textFontLoc.render(str(missilesDownLoc), True, textColLoc)
+    pointsLabelRect = pointsLabel.get_rect()
+    pointsLabelRect.right = 0.8 * xMaxLoc
+    pointsLabelRect.top = 0.05 * yMaxLoc
+    surfaceLoc.blit(pointsLabel, pointsLabelRect)
 
 
 """Draws the object (V or Missile) - if drawBoostBool is set to True draws the boost 
