@@ -12,9 +12,12 @@ from Missile import *  # missile class and methods
 from VFunctions import *  # V functions, also used for missile
 
 """Set up window"""
-xMax, yMax = 1920, 1080
+pg.init()
+
+info = pg.display.Info()
+xMax, yMax = info.current_w, info.current_h
 reso = (xMax, yMax)
-surface = pg.display.set_mode(reso)
+surface = pg.display.set_mode(reso, True)
 rect = surface.get_rect()
 
 """Get Flying V image and transform it"""
@@ -39,13 +42,15 @@ minSleep = 0.0001  # minimum time to sleep
 maxMissile = 0  # set maximum missile count
 timerMaxMissile = 0  # counter for maximum missiles
 timerSpawnMissile = 1  # counter for spawning missiles
+timerMaxMissileLimit = 2  # how often missile list is expanded
+timerSpawnMissileLimit = 2  # how often new missile spawns (if slot available)
+missilesHardCap = 20  # max amount of possible missiles
 missilesList = []  # list of missiles
 explosionsRect = []  # boxes for explosions
 explosionsFrame = []  # list for tracking explosion frames
 frameTimer = 0
 
 """Main loop"""
-pg.init()  # initialize PyGame
 running = True  # condition for main loop
 
 explosionSurfaces = [pg.transform.scale(pg.image.load("Explosion\Explosion " + str(i) + ".png"), (50, 50)) for i in
@@ -77,7 +82,7 @@ while running:
     xV, yV, xsV, ysV, thetaV = move(thetaV, xV, yV, xmV, ymV, deltaThetaMaxV, yMax, dt, vV)  # rotate and move V
     for missile in missilesList:
         if missile != 0:  # check if missile slot is empty
-            missile.move(xsV, ysV, dt)  # rotate and each move missile
+            missile.move(xV, yV, xsV, ysV, dt, vV, thetaV)  # rotate and each move missile
 
     """Display"""
     pg.draw.rect(surface, pg.Color("white"), rect)  # colour surface
@@ -117,17 +122,20 @@ while running:
 
     """Counter to increase maximum missile count"""
     timerMaxMissile += dt
-    if timerMaxMissile > 2:
+    if timerMaxMissile > timerMaxMissileLimit and len(missilesList) < missilesHardCap:
         missilesList.append(0)  # add missile slot
         timerMaxMissile = 0
 
     """Missile spawning"""
-    if len(missilesList) > 0:
-        timerSpawnMissile += dt
+    # if len(missilesList) > 0:
+    timerSpawnMissile += dt
     for index, missile in enumerate(missilesList):
-        if missile == 0 and timerSpawnMissile > 1:
-            missilesList[index] = Missile(xMax, yMax)
-            timerSpawnMissile = 0
+        if missile == 0 and timerSpawnMissile > 0.5 * timerSpawnMissileLimit:
+            red = True
+            if timerSpawnMissile > timerSpawnMissileLimit:
+                missilesList[index] = Missile(xMax, yMax)
+                timerSpawnMissile = 0
+                red = False
 
     """Collision"""
     VHitBox = gethitbox(thetaV, VRect)
