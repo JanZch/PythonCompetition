@@ -41,18 +41,19 @@ minSleep = 0.0001  # minimum time to sleep
 
 maxMissile = 0  # set maximum missile count
 timerMaxMissile = 0  # counter for maximum missiles
-timerSpawnMissile = 1  # counter for spawning missiles
+timerSpawnMissile = 0  # counter for spawning missiles
 timerMaxMissileLimit = 3  # how often missile list is expanded
 timerSpawnMissileLimit = 2  # how often new missile spawns (if slot available)
-timerSpawnMissileBool = False
+timerSpawnMissileBool = False # defined whether or not next missile is on queue
 missilesHardCap = 20  # max amount of possible missiles
 missilesList = []  # list of missiles
 explosionsRect = []  # boxes for explosions
 explosionsFrame = []  # list for tracking explosion frames
 frameTimer = 0
-redThickness = xMax / 150
-redColMax = np.array([139, 0, 0])
+redThickness = xMax / 150 # thickness of warning frame
+redColMax = np.array([139, 0, 0]) # max colour of warning frame
 whiteCol = np.array([255, 255, 255])
+minusRedCol = whiteCol - redColMax
 
 """Main loop"""
 running = True  # condition for main loop
@@ -113,7 +114,7 @@ while running:
         frameTimer = 0
     frameTimer += dt  # move timer forward
 
-    redCol = whiteCol - (whiteCol - redColMax) * timerSpawnMissile / timerSpawnMissileLimit
+    redCol = whiteCol - minusRedCol * timerSpawnMissile / timerSpawnMissileLimit
     redrect1 = pg.Rect(0, 0, xMax, redThickness)
     pg.draw.rect(surface, redCol, redrect1)
     redrect2 = pg.Rect(0, yMax - redThickness, xMax, redThickness)
