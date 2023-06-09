@@ -44,16 +44,18 @@ timerMaxMissile = 0  # counter for maximum missiles
 timerSpawnMissile = 0  # counter for spawning missiles
 timerMaxMissileLimit = 3  # how often missile list is expanded
 timerSpawnMissileLimit = 2  # how often new missile spawns (if slot available)
-timerSpawnMissileBool = False # defined whether or not next missile is on queue
+timerSpawnMissileBool = False  # defined whether next missile is on queue
 missilesHardCap = 20  # max amount of possible missiles
 missilesList = []  # list of missiles
+missilesDown = 0  # points
 explosionsRect = []  # boxes for explosions
 explosionsFrame = []  # list for tracking explosion frames
 frameTimer = 0
-redThickness = xMax / 150 # thickness of warning frame
-redColMax = np.array([139, 0, 0]) # max colour of warning frame
-whiteCol = np.array([255, 255, 255])
-minusRedCol = whiteCol - redColMax
+borderThickness = xMax / 150  # thickness of warning frame
+borderCol = pg.Color("dark red")  # border colour
+textCol = pg.Color("black")
+textFont = pg.font.SysFont("courier", 20)  # text font
+# print(pg.font.get_fonts())
 
 """Main loop"""
 running = True  # condition for main loop
@@ -89,13 +91,20 @@ while running:
         if missile != 0:  # check if missile slot is empty
             missile.move(xV, yV, xsV, ysV, dt, vV, thetaV)  # rotate and each move missile
 
+    """Timing"""
+    tSim = tSim + dt
+    tAbs = 0.001 * pg.time.get_ticks() - tStart
+    remainder = tSim - tAbs
+    if remainder > minSleep:
+        time.sleep(remainder)
+
     """Display"""
     pg.draw.rect(surface, pg.Color("white"), rect)  # colour surface
     for missile in missilesList:
         if missile != 0:  # check if missile slot is empty
             missile.draw(surface, rect)  # draw each missile
 
-    """Explosion handler"""
+    """Handle and display explosions"""
     if len(explosionsRect) > 0:  # check if there are explosions
         for explosionIndex, frame in enumerate(explosionsFrame):
             if frame <= 15:  # if the animation is not finished
@@ -114,27 +123,45 @@ while running:
         frameTimer = 0
     frameTimer += dt  # move timer forward
 
-    redCol = whiteCol - minusRedCol * timerSpawnMissile / timerSpawnMissileLimit
-    redrect1 = pg.Rect(0, 0, xMax, redThickness)
-    pg.draw.rect(surface, redCol, redrect1)
-    redrect2 = pg.Rect(0, yMax - redThickness, xMax, redThickness)
-    pg.draw.rect(surface, redCol, redrect2)
-    redrect3 = pg.Rect(0, 0, redThickness, yMax)
-    pg.draw.rect(surface, redCol, redrect3)
-    redrect4 = pg.Rect(xMax - redThickness, 0, redThickness, yMax)
-    pg.draw.rect(surface, redCol, redrect4)
-
     drawobj(thetaV, xsV, ysV, surface, VSurface, VRect)
     drawboost(surface, boostTimer, boostTimerMax, xMax, yMax)
     # /\ display flying V and boost bar, more info in V functions
 
+    """Display red borders"""
+    alpha = int(255 * timerSpawnMissile / timerSpawnMissileLimit)  # set opacity of red border
+
+    redRect1 = pg.Surface((xMax, borderThickness))  # top
+    redRect1.set_alpha(alpha)
+    redRect1.fill(borderCol)
+    surface.blit(redRect1, (0, 0))
+
+    redRect2 = pg.Surface((xMax, borderThickness))  # bottom
+    redRect2.set_alpha(alpha)
+    redRect2.fill(borderCol)
+    surface.blit(redRect2, (0, yMax - borderThickness))
+
+    redRect3 = pg.Surface((borderThickness, yMax - 2 * borderThickness))  # left
+    redRect3.set_alpha(alpha)
+    redRect3.fill(borderCol)
+    surface.blit(redRect3, (0, borderThickness))
+
+    redRect4 = pg.Surface((borderThickness, yMax - 2 * borderThickness))  # right
+    redRect4.set_alpha(alpha)
+    redRect4.fill(borderCol)
+    surface.blit(redRect4, (xMax - borderThickness, borderThickness))
+
+    """Display text"""
+    timeLabel = textFont.render(str(round(tAbs, 2)), True, textCol)
+    surface.blit(timeLabel, (0.2 * xMax, 0.05 * yMax))
+
+    pointsLabel = textFont.render(str(missilesDown), True, textCol)
+    pointsLabelRect = pointsLabel.get_rect()
+    pointsLabelRect.right = 0.8 * xMax
+    pointsLabelRect.top = 0.05 * yMax
+    surface.blit(pointsLabel, pointsLabelRect)
+
     pg.display.flip()  # update display
 
-    """Timing"""
-    tSim = tSim + dt
-    remainder = tSim - (0.001 * pg.time.get_ticks() - tStart)
-    if remainder > minSleep:
-        time.sleep(remainder)
 
     """Counter to increase maximum missile count"""
     timerMaxMissile += dt
@@ -173,6 +200,7 @@ while running:
                     explosionsRect.append(missilesList[hit].hitbox())
                     explosionsFrame.append(0)
                     missilesList[hit], missilesList[index] = 0, 0
+                    missilesDown += 1
 
     """Break loop if necessary"""
     for event in pg.event.get():

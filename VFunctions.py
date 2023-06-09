@@ -14,7 +14,6 @@ def transformimage(pathLoc, scaleLoc):
     ogSurfaceLoc = pg.transform.smoothscale(ogSurfaceLoc,
                                             (ogSurfaceLoc.get_width() * scaleLoc,
                                              ogSurfaceLoc.get_height() * scaleLoc))  # scale down
-    ogRectLoc = ogSurfaceLoc.get_rect()  # not used ?
 
     objSurfaceLoc = []  # array for rotated surfaces
     objRectLoc = []  # array for rotated rectangles
