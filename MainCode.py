@@ -42,13 +42,17 @@ minSleep = 0.0001  # minimum time to sleep
 maxMissile = 0  # set maximum missile count
 timerMaxMissile = 0  # counter for maximum missiles
 timerSpawnMissile = 1  # counter for spawning missiles
-timerMaxMissileLimit = 2  # how often missile list is expanded
+timerMaxMissileLimit = 3  # how often missile list is expanded
 timerSpawnMissileLimit = 2  # how often new missile spawns (if slot available)
+timerSpawnMissileBool = False
 missilesHardCap = 20  # max amount of possible missiles
 missilesList = []  # list of missiles
 explosionsRect = []  # boxes for explosions
 explosionsFrame = []  # list for tracking explosion frames
 frameTimer = 0
+redThickness = xMax / 150
+redColMax = np.array([139, 0, 0])
+whiteCol = np.array([255, 255, 255])
 
 """Main loop"""
 running = True  # condition for main loop
@@ -109,9 +113,20 @@ while running:
         frameTimer = 0
     frameTimer += dt  # move timer forward
 
+    redCol = whiteCol - (whiteCol - redColMax) * timerSpawnMissile / timerSpawnMissileLimit
+    redrect1 = pg.Rect(0, 0, xMax, redThickness)
+    pg.draw.rect(surface, redCol, redrect1)
+    redrect2 = pg.Rect(0, yMax - redThickness, xMax, redThickness)
+    pg.draw.rect(surface, redCol, redrect2)
+    redrect3 = pg.Rect(0, 0, redThickness, yMax)
+    pg.draw.rect(surface, redCol, redrect3)
+    redrect4 = pg.Rect(xMax - redThickness, 0, redThickness, yMax)
+    pg.draw.rect(surface, redCol, redrect4)
+
     drawobj(thetaV, xsV, ysV, surface, VSurface, VRect)
     drawboost(surface, boostTimer, boostTimerMax, xMax, yMax)
     # /\ display flying V and boost bar, more info in V functions
+
     pg.display.flip()  # update display
 
     """Timing"""
@@ -128,14 +143,15 @@ while running:
 
     """Missile spawning"""
     # if len(missilesList) > 0:
-    timerSpawnMissile += dt
     for index, missile in enumerate(missilesList):
-        if missile == 0 and timerSpawnMissile > 0.5 * timerSpawnMissileLimit:
-            red = True
+        if missile == 0:
+            timerSpawnMissileBool = True
             if timerSpawnMissile > timerSpawnMissileLimit:
                 missilesList[index] = Missile(xMax, yMax)
                 timerSpawnMissile = 0
-                red = False
+                timerSpawnMissileBool = False
+    if timerSpawnMissileBool:
+        timerSpawnMissile += dt
 
     """Collision"""
     VHitBox = gethitbox(thetaV, VRect)
