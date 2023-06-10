@@ -79,7 +79,7 @@ while wholeThing:
     difficultyMissilesVMax = [0.35, 0.5, 0.7, 0.7, 0.3]
     difficultyMissilesThetaMin = [0.02, 0.05, 0.06, 0.08, 0.02]
     difficultyMissilesThetaMax = [0.03, 0.08, 0.08, 0.1, 0.025]
-    difficultyWinTime = [60, 60, 75, 90, 10]
+    difficultyWinTime = [1, 60, 75, 90, 10]
 
     """Get the story text"""
     storyText = gettext("story")
@@ -98,6 +98,7 @@ while wholeThing:
     quits = False
     gameOver = False
     diffNotSet = True
+    playMusic = True
 
     while mainGame:
 
@@ -142,11 +143,19 @@ while wholeThing:
                         wholeThing = False
 
         if ending:
+            if playMusic:
+                pg.mixer.music.load("endingmusic.mp3")
+                pg.mixer.music.play(1)
+                playMusic = False
             surface.blit(endingBg, (0, 0))
             printfile(surface, endingText, textFont, textCol, xMax, yMax)  # draw the ending
             mainGame = gameend(surface, textFont, textCol, xMax, yMax)
 
         if gameOver:
+            if playMusic:
+                pg.mixer.music.load("gameovermusic.mp3")
+                pg.mixer.music.play(-1)
+                playMusic = False
             surface.blit(gameOverBg, (0, 0))
             printfile(surface, gameOverText, textFont, textCol, xMax, yMax)  # draw the game over
             mainGame = gameend(surface, textFont, textCol, xMax, yMax)
