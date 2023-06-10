@@ -21,7 +21,7 @@ surface = pg.display.set_mode(reso, True)
 rect = surface.get_rect()
 
 """Get Flying V image and transform it"""
-VSurface, VRect, VRectHitbox = transformimage("FlyingV.png", 0.03, 0.5)  # image scaling, hitbox scaling
+VSurface, VRect, VRectHitbox = transformimage("FlyingV.png", 0.03, 0.7)  # image scaling, hitbox scaling
 # VRectHit = pg.Rect.inflate(VRect, (-2, -2))
 
 """Get explosion frames"""

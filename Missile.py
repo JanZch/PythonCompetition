@@ -19,7 +19,14 @@ class Missile:
         self.MissileSurface, self.MissileRect = transformimage("Sidewinder.png", 0.05)  # transform image
         self.xMissile, self.yMissile = xMissileInit, yMissileInit
         # /\ get a point on the edge of the screen -> starting point
-        self.thetaMissile = np.pi / 2  # starting attitude
+        if xMissileInit == 0:  # start on the left
+            self.thetaMissile = 0  # starting attitude
+        elif xMissileInit == 1:  # start on the right
+            self.thetaMissile = np.pi
+        elif yMissileInit == 1:  # start at the top
+            self.thetaMissile = 3 * np.pi / 2
+        else:  # start at the bottom
+            self.thetaMissile = np.pi / 2
         self.deltaThetaMaxMissile = rand.uniform(0.01, 0.1)  # maximum allowed change in attitude in time dt
         self.v0Missile = rand.uniform(0.1, 0.7)  # idle velocity
         self.vMissile = self.v0Missile  # set velocity to idle
