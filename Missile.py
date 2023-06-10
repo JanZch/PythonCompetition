@@ -1,5 +1,4 @@
 """Basic Rules"""
-import numpy as np
 
 # Use camelCase
 # Make headers explaining what this code does
@@ -7,7 +6,6 @@ import numpy as np
 
 """Code for the missile"""
 
-import random as rand  # for choosing starting point
 from movement import *  # for moving the missile
 from VFunctions import *  # for display and image transform
 
@@ -37,7 +35,7 @@ class Missile:
         -> inputs : xsV, ysV - screen coordinates of the V, dt - timestep
         outputs ->: none, changes the variables of the missile"""
 
-    def move(self, xV, yV, xsV, ysV, dt, vV, thetaV):
+    def move(self, xV, yV, dt, vV, thetaV):
         a = np.tan(thetaV)
         b = -1
         c = -xV + yV

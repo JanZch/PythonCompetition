@@ -41,29 +41,35 @@ def drawboost(surfaceLoc, boostTimerLoc, boostTimerMaxLoc, xMaxLoc, yMaxLoc):
     return
 
 
+"""Draws the warning borders
+    -> inputs : surfaceLoc - surface on which it is drawn, timerSpawnMissileLoc, timerSpawnMissileLimitLoc - spawn timer, xMaxLoc, yMaxLoc - maximum screen coordinates, xMissileInit, yMissileInit - missile spawn coordinates, borderThicknessLoc - thickness of borders, borderColLoc - colour of borders
+    outputs ->: none, draws the warning borders"""
+
+
 def drawborders(surfaceLoc, timerSpawnMissileLoc, timerSpawnMissileLimitLoc,
                 xMaxLoc, yMaxLoc, xMissileInit, yMissileInit, borderThicknessLoc, borderColLoc):
-    alpha = int(255 * timerSpawnMissileLoc / timerSpawnMissileLimitLoc)  # set opacity of red border
-    if yMissileInit == 1:
-        redRect1 = pg.Surface((0.6 * xMaxLoc, borderThicknessLoc))  # top
-        redRect1.set_alpha(alpha)
-        redRect1.fill(borderColLoc)
-        surfaceLoc.blit(redRect1, (0.2 * xMaxLoc, 0))
-    if yMissileInit == 0:
-        redRect2 = pg.Surface((0.6 * xMaxLoc, borderThicknessLoc))  # bottom
-        redRect2.set_alpha(alpha)
-        redRect2.fill(borderColLoc)
-        surfaceLoc.blit(redRect2, (0.2 * xMaxLoc, yMaxLoc - borderThicknessLoc))
-    if xMissileInit == 0:
-        redRect3 = pg.Surface((borderThicknessLoc, 0.6 * yMaxLoc))  # left
-        redRect3.set_alpha(alpha)
-        redRect3.fill(borderColLoc)
-        surfaceLoc.blit(redRect3, (0, 0.2 * yMaxLoc))
-    if xMissileInit == 16 / 9:
-        redRect4 = pg.Surface((borderThicknessLoc, 0.6 * yMaxLoc))  # right
-        redRect4.set_alpha(alpha)
-        redRect4.fill(borderColLoc)
-        surfaceLoc.blit(redRect4, (xMaxLoc - borderThicknessLoc, 0.2 * yMaxLoc))
+    alpha = int(255 * timerSpawnMissileLoc / timerSpawnMissileLimitLoc)
+    # /\ get opacity of border depending on spawn timer progress
+    if yMissileInit == 1:  # spawning at the top
+        borderSurface = pg.Surface((0.6 * xMaxLoc, borderThicknessLoc))  # get surface and size it
+        borderSurface.set_alpha(alpha)  # set opacity of surface
+        borderSurface.fill(borderColLoc)  # fill surface with borderColLoc
+        surfaceLoc.blit(borderSurface, (0.2 * xMaxLoc, 0))  # position surface on background
+    if yMissileInit == 0:  # spawning at the bottom
+        borderSurface = pg.Surface((0.6 * xMaxLoc, borderThicknessLoc))
+        borderSurface.set_alpha(alpha)
+        borderSurface.fill(borderColLoc)
+        surfaceLoc.blit(borderSurface, (0.2 * xMaxLoc, yMaxLoc - borderThicknessLoc))
+    if xMissileInit == 0:  # spawning on the left
+        borderSurface = pg.Surface((borderThicknessLoc, 0.6 * yMaxLoc))
+        borderSurface.set_alpha(alpha)
+        borderSurface.fill(borderColLoc)
+        surfaceLoc.blit(borderSurface, (0, 0.2 * yMaxLoc))
+    if xMissileInit == 16 / 9:  # spawning on the right
+        borderSurface = pg.Surface((borderThicknessLoc, 0.6 * yMaxLoc))
+        borderSurface.set_alpha(alpha)
+        borderSurface.fill(borderColLoc)
+        surfaceLoc.blit(borderSurface, (xMaxLoc - borderThicknessLoc, 0.2 * yMaxLoc))
 
 
 def drawtext(surfaceLoc, textFontLoc, textColLoc, xMaxLoc, yMaxLoc, tAbsLoc, missilesDownLoc):
@@ -100,7 +106,8 @@ def gethitbox(thetaLoc, objRectLoc):
 
 def randedge():
     xMissileLoc = rand.choice((0, rand.uniform(0, 16 / 9), 16 / 9))  # choose random x coordinate
-    if xMissileLoc != 0 and xMissileLoc != 16 / 9:  # if the x coordinate is not zero, set the y coordinate to zero or yMax -> top or bottom edge
+    if xMissileLoc != 0 and xMissileLoc != 16 / 9:
+        # if the x coordinate is not zero, set the y coordinate to zero or yMax -> top or bottom edge
         yMissileLoc = rand.choice((0, 1))
     else:
         yMissileLoc = rand.uniform(0, 1)

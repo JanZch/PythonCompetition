@@ -24,6 +24,10 @@ rect = surface.get_rect()
 VSurface, VRect = transformimage("FlyingV.png", 0.03)
 # VRectHit = pg.Rect.inflate(VRect, (-2, -2))
 
+"""Get explosion frames"""
+explosionSurfaces = [pg.transform.scale(pg.image.load("Explosion\Explosion " + str(i) + ".png"), (50, 50)) for i in
+                     range(16)]
+
 """Define and set variables"""
 xV, yV = xMax / yMax * 0.5, 0.5  # starting position
 thetaV = np.pi / 2  # starting attitude
@@ -40,13 +44,12 @@ tStart = 0.001 * pg.time.get_ticks()  # starting time
 dt = 0.01  # time step
 minSleep = 0.0001  # minimum time to sleep
 
-maxMissile = 0  # set maximum missile count
 timerMaxMissile = 0  # counter for maximum missiles
 timerSpawnMissile = 0  # counter for spawning missiles
 timerMaxMissileLimit = 3  # how often missile list is expanded
-timerSpawnMissileLimit = 2  # how often new missile spawns (if slot available)
-timerSpawnMissileBool = False  # defined whether next missile is on queue
-posMissileInitSet = False
+timerSpawnMissileLimit = 1  # how often new missile spawns (if slot available)
+timerSpawnMissileBool = False  # defines whether next missile is on queue
+posMissileInitSet = False  # defines whether initial position is set for next missile
 xMissileInit, yMissileInit = 0, 0
 missilesHardCap = 20  # max amount of possible missiles
 missilesList = []  # list of missiles
@@ -62,9 +65,6 @@ background = pg.image.load("Delftorange.jpg")
 
 """Main loop"""
 running = True  # condition for main loop
-
-explosionSurfaces = [pg.transform.scale(pg.image.load("Explosion\Explosion " + str(i) + ".png"), (50, 50)) for i in
-                     range(16)]
 
 while running:
     """Inputs"""
@@ -92,7 +92,7 @@ while running:
     xV, yV, xsV, ysV, thetaV = move(thetaV, xV, yV, xmV, ymV, deltaThetaMaxV, yMax, dt, vV)  # rotate and move V
     for missile in missilesList:
         if missile != 0:  # check if missile slot is empty
-            missile.move(xV, yV, xsV, ysV, dt, vV, thetaV)  # rotate and each move missile
+            missile.move(xV, yV, dt, vV, thetaV)  # rotate and each move missile
 
     """Timing"""
     tSim = tSim + dt
@@ -102,8 +102,7 @@ while running:
         time.sleep(remainder)
 
     """Display"""
-    # pg.draw.rect(surface, pg.Color("white"), rect)
-    surface.blit(background, (0, 0))  # colour surface
+    surface.blit(background, (0, 0))  # blit background image
     for missile in missilesList:
         if missile != 0:  # check if missile slot is empty
             missile.draw(surface, rect)  # draw each missile
@@ -135,6 +134,8 @@ while running:
 
     drawborders(surface, timerSpawnMissile, timerSpawnMissileLimit, xMax, yMax, xMissileInit, yMissileInit,
                 borderThickness, borderCol)
+    # /\ draw green warning borders depending on where the missile is coming from and
+    # how far timerSpawnMissile has progressed since initiation
 
     pg.display.flip()  # update display
 
@@ -147,19 +148,18 @@ while running:
     """Missile spawning"""
     # if len(missilesList) > 0:
     for index, missile in enumerate(missilesList):
-        if missile == 0:
-            timerSpawnMissileBool = True
-            if not posMissileInitSet:
+        if missile == 0:  # initate spawning if there is an empty slot in missilesList
+            timerSpawnMissileBool = True  # start spawning missile
+            if not posMissileInitSet:  # set initial position for missile being spawned
                 xMissileInit, yMissileInit = randedge()
                 posMissileInitSet = True
             if timerSpawnMissile > timerSpawnMissileLimit:
-                print(xMissileInit, yMissileInit)
-                missilesList[index] = Missile(xMax, yMax, xMissileInit, yMissileInit)
+                missilesList[index] = Missile(xMax, yMax, xMissileInit, yMissileInit)  # spawn missile
                 timerSpawnMissile = 0
                 timerSpawnMissileBool = False
                 posMissileInitSet = False
     if timerSpawnMissileBool:
-        timerSpawnMissile += dt
+        timerSpawnMissile += dt  # if missile being spawned, increase counter until it hits timerSpawnMissileLimit
 
     """Collision"""
     VHitBox = gethitbox(thetaV, VRect)
@@ -170,17 +170,18 @@ while running:
         else:
             missileHitBoxes.append(pg.Rect(0, 0, 0, 0))
 
-    # if VHitBox.collidelist(missileHitBoxes) >= 0:  # check collision with V
-    #     running = False
+    if VHitBox.collidelist(missileHitBoxes) >= 0:  # check collision with V
+        running = False
 
     for index, missile in enumerate(missilesList):  # missile to missile collision
         if missile != 0:  # check if missile slot is empty
             for hit in missile.hitbox().collidelistall(missileHitBoxes):
                 if hit != index:
-                    explosionsRect.append(missilesList[index].hitbox())
-                    explosionsFrame.append(0)
-                    missilesList[hit], missilesList[index] = 0, 0
-                    missilesDown += 1
+                    if missilesList[index] != 0:
+                        explosionsRect.append(missilesList[index].hitbox())
+                        explosionsFrame.append(0)
+                        missilesList[hit], missilesList[index] = 0, 0
+                        missilesDown += 1
 
     """Break loop if necessary"""
     for event in pg.event.get():

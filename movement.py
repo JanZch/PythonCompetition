@@ -14,9 +14,9 @@ def move(theta, xCurrent, yCurrent, xTarget, yTarget, deltaThetaMax, yMax, dt, v
     alpha = np.arctan2(ys - yTarget, xTarget - xs)  # get angle of pointer wrt V
     if alpha < 0:  # convert -pi pi range of atan2 to 0 2pi
         alpha += 2 * np.pi
-    if 2 * np.pi - theta + alpha < abs(alpha - theta):  # if angle has to go from under to above x axis
+    if 2 * np.pi - theta + alpha < abs(alpha - theta):  # if angle has to go from under to above x-axis
         deltaTheta = 2 * np.pi - theta + alpha
-    elif 2 * np.pi + theta - alpha < abs(alpha - theta):  # if angle has to go from above to under the x axis
+    elif 2 * np.pi + theta - alpha < abs(alpha - theta):  # if angle has to go from above to under the x-axis
         deltaTheta = - (2 * np.pi + theta - alpha)
     else:
         deltaTheta = alpha - theta  # if neither are needed
