@@ -21,7 +21,7 @@ surface = pg.display.set_mode(reso, True)
 rect = surface.get_rect()
 
 """Get Flying V image and transform it"""
-VSurface, VRect = transformimage("FlyingV.png", 0.03)
+VSurface, VRect, VRectHitbox = transformimage("FlyingV.png", 0.03, 0.5)  # image scaling, hitbox scaling
 # VRectHit = pg.Rect.inflate(VRect, (-2, -2))
 
 """Get explosion frames"""
@@ -38,7 +38,6 @@ boostTimerMax, boostTimerMin = 3, 1  # boost capacity, threshold boost level to 
 acc = 4  # acceleration given by boost
 boost = False  # status of boosters
 boostTimer = 0  # current boost level
-
 tSim = 0.0  # current simulated time
 tStart = 0.001 * pg.time.get_ticks()  # starting time
 dt = 0.01  # time step
@@ -126,7 +125,7 @@ while running:
         frameTimer = 0
     frameTimer += dt  # move timer forward
 
-    drawobj(thetaV, xsV, ysV, surface, VSurface, VRect)
+    drawobj(thetaV, xsV, ysV, surface, VSurface, VRect, VRectHitbox)
     drawboost(surface, boostTimer, boostTimerMax, xMax, yMax)
     # /\ display flying V and boost bar, more info in V functions
 
@@ -162,7 +161,7 @@ while running:
         timerSpawnMissile += dt  # if missile being spawned, increase counter until it hits timerSpawnMissileLimit
 
     """Collision"""
-    VHitBox = gethitbox(thetaV, VRect)
+    VHitBox = gethitbox(thetaV, VRectHitbox)
     missileHitBoxes = []
     for missile in missilesList:
         if missile != 0:  # check if missile slot is empty

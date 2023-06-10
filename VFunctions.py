@@ -11,7 +11,7 @@ otherwise maincode -> missile -> maincode ->..."""
     outputs ->: objSurfaceLoc - rotated surfaces, objRectLoc - rotated rectangles"""
 
 
-def transformimage(pathLoc, scaleLoc):
+def transformimage(pathLoc, scaleLoc, scaleHitboxLoc=0):
     ogSurfaceLoc = pg.image.load(pathLoc)
     ogSurfaceLoc = pg.transform.smoothscale(ogSurfaceLoc,
                                             (ogSurfaceLoc.get_width() * scaleLoc,
@@ -19,12 +19,18 @@ def transformimage(pathLoc, scaleLoc):
 
     objSurfaceLoc = []  # array for rotated surfaces
     objRectLoc = []  # array for rotated rectangles
+    objHitboxLoc = []  # array for scaled rectangles for hitbox
 
     for i in range(361):  # get a rotated image for all 360 degrees
         objSurfaceLoc.append(pg.transform.rotate(ogSurfaceLoc, 180 + i))
         objRectLoc.append(objSurfaceLoc[i].get_rect())
 
-    return objSurfaceLoc, objRectLoc
+    if scaleHitboxLoc != 0:
+        for i in range(361):
+            objHitboxLoc.append(pg.Rect.scale_by(objRectLoc[i], scaleHitboxLoc, scaleHitboxLoc))
+        return objSurfaceLoc, objRectLoc, objHitboxLoc
+    else:
+        return objSurfaceLoc, objRectLoc
 
 
 """Draws the boost bar
@@ -92,16 +98,23 @@ def drawtext(surfaceLoc, textFontLoc, textColLoc, xMaxLoc, yMaxLoc, tAbsLoc, mis
     outputs ->: """
 
 
-def drawobj(thetaLoc, xsObjLoc, ysObjLoc, surfaceLoc, objSurfaceLoc, objRectLoc):
+def drawobj(thetaLoc, xsObjLoc, ysObjLoc, surfaceLoc, objSurfaceLoc, objRectLoc, objHitboxLoc=0):
     thetaDeg = int(np.degrees(thetaLoc))  # get theta in degrees
-    objRectLoc[thetaDeg].center = (xsObjLoc, ysObjLoc)  # get rotated V and position it
-    surfaceLoc.blit(objSurfaceLoc[thetaDeg], objRectLoc[thetaDeg])  # put V onto surface
+    objRectLoc[thetaDeg].center = (xsObjLoc, ysObjLoc)  # get rotated object and position it
+    if objHitboxLoc != 0:
+        objHitboxLoc[thetaDeg].center = (xsObjLoc, ysObjLoc)
+    surfaceLoc.blit(objSurfaceLoc[thetaDeg], objRectLoc[thetaDeg])  # put object onto surface
     return
 
 
 def gethitbox(thetaLoc, objRectLoc):
     thetaDeg = int(np.degrees(thetaLoc))  # get theta in degrees
     return objRectLoc[thetaDeg]
+
+
+"""Get random point on edge
+    -> inputs : 
+    outputs ->: xMissileLoc - missile x coordinate, yMissileLoc - missile y coordinate"""
 
 
 def randedge():
