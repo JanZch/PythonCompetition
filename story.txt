@@ -1,5 +1,5 @@
 ----------------------------------this is the width of the screen---------------------------------------
-The year is 2137, the world has been taken over by AI and you are one of the few remaining survivors.
+The world has been taken over by AI and you are one of the few remaining survivors.
 In a last ditch effort to save humanity, you and Jacco take the last aircraft, the flying V to the skies.
 You must go and fire an EMP in order to disable the AI and save the world.
 You go to your destination, but it seems the EMP device will take a while to arm.
@@ -10,6 +10,7 @@ You must survive long enough for the EMP to arm and save humanity!
 Controls:
 Move the mouse to control the flying V
 Click the left mouse button to boost
+Press Escape to quit
 
 Difficulty:
 1 - Easy: dumb AI, slow rockets, medium amount of rockets, 60 seconds

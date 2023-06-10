@@ -18,7 +18,7 @@ def gettext(fileLoc):
 def gameend(surfaceLoc, textFontLoc, textColLoc, xMaxLoc, yMaxLoc):
     gameRun = True
     contRect = pg.Rect(0.5 * xMaxLoc - 200, 0.9 * yMaxLoc, 300, 25)  # draw space to continue
-    surfaceLoc.blit(textFontLoc.render("Press SPACE to quit", True, textColLoc), contRect)
+    surfaceLoc.blit(textFontLoc.render("Press SPACE to go back to the menu", True, textColLoc), contRect)
     for event in pg.event.get():
         if event.type == pg.QUIT:
             gameRun = False
