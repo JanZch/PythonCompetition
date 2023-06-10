@@ -1,7 +1,9 @@
 import pygame as pg
 
+
 def printfile(surfaceLoc, textLinesLoc, textFontLoc, textColLoc, xMaxLoc, yMaxLoc):
-    textRectLoc = pg.Rect(0.1 * xMaxLoc, 0.1 * yMaxLoc, 0.8 * xMaxLoc, 25)  # create Rect for the story
+    textRectLoc = pg.Rect(0, 0, 0.9 * xMaxLoc, 25)  # create Rect for the story
+    textRectLoc.center = (0.5 * xMaxLoc, 0.1 * yMaxLoc)
     for line in textLinesLoc:  # get the story text and render it
         storyTextLine = textFontLoc.render(line, True, textColLoc)
         surfaceLoc.blit(storyTextLine, textRectLoc)
@@ -14,6 +16,7 @@ def gettext(fileLoc):
         for line in f:
             textLinesLoc.append(line.strip())
     return textLinesLoc
+
 
 def gameend(surfaceLoc, textFontLoc, textColLoc, xMaxLoc, yMaxLoc):
     gameRun = True
