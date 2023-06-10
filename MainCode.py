@@ -87,7 +87,7 @@ while wholeThing:
     endingText = gettext("ending")
 
     """Play music"""
-    pg.mixer.music.load("music.mp3")
+    pg.mixer.music.load("openingmusic.mp3")
     pg.mixer.music.play(-1)
 
     """Running bools"""
@@ -168,6 +168,8 @@ while wholeThing:
                 missilesDeltaThetaMax = difficultyMissilesThetaMax[difficulty]
                 winTime = difficultyWinTime[difficulty]
                 diffNotSet = False
+                pg.mixer.music.load("music.mp3")
+                pg.mixer.music.play(-1)
 
             """Inputs"""
             pressed = pg.mouse.get_pressed()[0]
