@@ -13,7 +13,7 @@ from VFunctions import *  # for display and image transform
 class Missile:
     count = 0
 
-    def __init__(self, xMaxInput, yMaxInput, xMissileInit, yMissileInit):  # initialize object
+    def __init__(self, xMaxInput, yMaxInput, xMissileInit, yMissileInit, MissileScale, MissileVMin, MissileVMax, MissileDeltaThetaMin, MissileDeltaThetaMax):  # initialize object
         """Define and set variables"""
         self.xMax, self.yMax = xMaxInput, yMaxInput  # get screen size
         self.MissileSurface, self.MissileRect = transformimage("Sidewinder.png", 0.05)  # transform image
@@ -27,12 +27,12 @@ class Missile:
             self.thetaMissile = 3 * np.pi / 2
         else:  # start at the bottom
             self.thetaMissile = np.pi / 2
-        self.deltaThetaMaxMissile = rand.uniform(0.01, 0.1)  # maximum allowed change in attitude in time dt
-        self.v0Missile = rand.uniform(0.1, 0.7)  # idle velocity
+        self.deltaThetaMaxMissile = rand.uniform(MissileDeltaThetaMin, MissileDeltaThetaMax)  # maximum allowed change in attitude in time dt
+        self.v0Missile = rand.uniform(MissileVMin, MissileVMax)  # idle velocity
         self.vMissile = self.v0Missile  # set velocity to idle
         self.xsMissile = int(self.xMissile * self.yMax)  # surface coordinate x - not necessary but
         self.ysMissile = self.yMax - int(self.yMissile * self.yMax)  # surface coordinate y
-        self.sScale = 0.3  # constant scaling factor for targeting overshoot
+        self.sScale = MissileScale  # constant scaling factor for targeting overshoot
         Missile.count += 1  # counter of how many missiles were spawned
 
     """Move missile to flying V
