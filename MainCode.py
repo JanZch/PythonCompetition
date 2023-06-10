@@ -25,8 +25,8 @@ VSurface, VRect, VRectHitbox = transformimage("FlyingV.png", 0.03, 0.7)  # image
 # VRectHit = pg.Rect.inflate(VRect, (-2, -2))
 
 """Get explosion frames"""
-explosionSurfaces = [pg.transform.scale(pg.image.load("Explosion\Explosion " + str(i) + ".png"), (50, 50)) for i in
-                     range(16)]
+explosionSurfacesMissile = [pg.transform.scale(pg.image.load("Explosion\Explosion (" + str(i) + ").png"), (100, 100))
+                            for i in range(1, 31)]
 
 """Define and set variables"""
 xV, yV = xMax / yMax * 0.5, 0.5  # starting position
@@ -64,6 +64,9 @@ background = pg.image.load("Delftorange.jpg")
 
 """Main loop"""
 running = True  # condition for main loop
+
+pg.mixer.music.load("music.mp3")
+pg.mixer.music.play(-1)
 
 while running:
     """Inputs"""
@@ -109,8 +112,9 @@ while running:
     """Handle and display explosions"""
     if len(explosionsRect) > 0:  # check if there are explosions
         for explosionIndex, frame in enumerate(explosionsFrame):
-            if frame <= 15:  # if the animation is not finished
-                surface.blit(explosionSurfaces[frame], explosionsRect[explosionIndex])  # draw frame
+            if frame < 30:  # if the animation is not finished
+                print(frame)
+                surface.blit(explosionSurfacesMissile[frame], explosionsRect[explosionIndex])  # draw frame
                 if frameTimer > 0.05:
                     explosionsFrame[explosionIndex] += 1  # step forward 1 frame
             else:
@@ -169,8 +173,8 @@ while running:
         else:
             missileHitBoxes.append(pg.Rect(0, 0, 0, 0))
 
-    if VHitBox.collidelist(missileHitBoxes) >= 0:  # check collision with V
-        running = False
+    # if VHitBox.collidelist(missileHitBoxes) >= 0:  # check collision with V
+    #     running = False
 
     for index, missile in enumerate(missilesList):  # missile to missile collision
         if missile != 0:  # check if missile slot is empty
