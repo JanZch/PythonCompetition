@@ -6,7 +6,10 @@ balancing work
  - adjust speeds and turn speeds
 points, lives
 gameover
-Sidescrolling
+difficulty setting
+music
+
+sidescrolling
   
 
 Rules:
